@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class GetWikipediaContent {
 
     /** The output file name for the examples randomly generated. */
-    private static final String outFileName = "training.txt";
+    private static final String outFileName = "testing.txt";
 
     /** The number of examples of each language to generate */
     private static final int NUMBER_EXAMPLES_EACH = 200;
