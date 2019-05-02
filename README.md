@@ -1,4 +1,6 @@
-# Multi-Language-Classifer
+# Multi-Language-Classifier
+
+Requires Java 9+
 
 The goal of this is to combine a lot of the various techniques in machine learning, 
 some of which I have learned in detail in my classes, and some of these have just been touched upon.
