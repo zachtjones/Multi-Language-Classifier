@@ -63,7 +63,7 @@ public class GetWikipediaContent {
                 .replaceAll("<.*?>", " ") // remove html tags
                 .replaceAll("[0-9]", "") // remove numbers
                 .replaceAll("&.*?;", " ") // remove html special chars
-                .replaceAll("[\\-()*&^%$#@!,./?'\";:+«»‘\\[\\]{}=_\\\\|\u8211\u0183°′”″“’ʻ·–—•„]", " ") // punctuation
+                .replaceAll("[\\-()*&^%$#@!,./?'\";:+«»‘\\[\\]{}=_\\\\|\u8211\u0183°′”″“’ʻ·–—•º„]", " ") // punctuation
                 .split("\\b");
             for (String i : items) {
 
@@ -151,7 +151,7 @@ public class GetWikipediaContent {
             new Pair<>("Icelandic", new URL("https://is.wikipedia.org/wiki/Kerfiss%C3%AD%C3%B0a:Handah%C3%B3fsvalin_s%C3%AD%C3%B0a")),
             new Pair<>("Italian", new URL("https://it.wikipedia.org/wiki/Speciale:PaginaCasuale")),
             new Pair<>("Romanian", new URL("https://ro.wikipedia.org/wiki/Special:Aleatoriu")),
-            new Pair<>("Samoan", new URL("https://sm.wikipedia.org/wiki/Gagana_fa%27a_S%C4%81moa")),
+            new Pair<>("Samoan", new URL("https://sm.wikipedia.org/wiki/Special:Random")),
             new Pair<>("Spanish", new URL("https://es.wikipedia.org/wiki/Especial:Aleatoria"))
         );
     }
