@@ -26,6 +26,9 @@ public class GetWikipediaContent {
     /** The number of examples of each language to generate */
     private static final int NUMBER_EXAMPLES_EACH = 200;
 
+    /** Regular expression of characters to remove from the input. */
+    public static final String REGEX = "[\\-()*&^%$#@!,./?'\";:+«»‘\\[\\]{}=_\\\\|\u8211\u0183°′”″“’ʻ·–—•º„]";
+
     /** constant time removal from start and appending to end. Keep it in case for
      * word order mattering */
     private static HashMap<URL, LinkedList<String>> cache = new HashMap<>();
@@ -63,7 +66,7 @@ public class GetWikipediaContent {
                 .replaceAll("<.*?>", " ") // remove html tags
                 .replaceAll("[0-9]", "") // remove numbers
                 .replaceAll("&.*?;", " ") // remove html special chars
-                .replaceAll("[\\-()*&^%$#@!,./?'\";:+«»‘\\[\\]{}=_\\\\|\u8211\u0183°′”″“’ʻ·–—•º„]", " ") // punctuation
+                .replaceAll(REGEX, " ") // punctuation
                 .split("\\b");
             for (String i : items) {
 

@@ -11,6 +11,13 @@ The techniques I'm going to explore:
   - boosting, specifically adaboost (detailed in class), a method of weighting other learning algorithms and inputs to learn better
   - neural networks (parts are detailed, parts are not)
   
+Feature selection:
+  - specific words (the, a, an, and their equivalents)
+  - a word ends with a sequence of characters
+  - a word starts with a sequence of characters
+  - a word contains a sequence of characters
+  - letter count of one letter greater than another letter
+  
 Multiple classification:
   - since there's many languages to decide between, I'm going to use binary classifiers in a one vs one approach.
   - requires training `K (K − 1) / 2` binary classifiers, and then taking the number of +1 votes on each classification, the one with the max is the language decided.
@@ -32,7 +39,7 @@ The languages I'm going to try to classify:
   - Icelandic: https://is.wikipedia.org/wiki/Kerfiss%C3%AD%C3%B0a:Handah%C3%B3fsvalin_s%C3%AD%C3%B0a
   - Italian: https://it.wikipedia.org/wiki/Speciale:PaginaCasuale
   - Romanian: https://ro.wikipedia.org/wiki/Special:Aleatoriu
-  - Samoan: https://sm.wikipedia.org/wiki/Gagana_fa%27a_S%C4%81moa
+  - Samoan: https://sm.wikipedia.org/wiki/Special:Random
   - Spanish: https://es.wikipedia.org/wiki/Especial:Aleatoria
   
 These languages are strategically chosen:
