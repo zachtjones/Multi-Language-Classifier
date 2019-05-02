@@ -2,7 +2,11 @@ package main;
 
 import examples.GetWikipediaContent;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Represents a row of input to either the training or testing.
@@ -30,5 +34,17 @@ class InputRow implements Serializable {
 			.replaceAll(GetWikipediaContent.REGEX, " ")
 			.toLowerCase()
 			.split(" "); // split on spaces
+	}
+
+	/** Loads the examples from the file. */
+	public static ArrayList<InputRow> loadExamples(String exampleFile) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(exampleFile));
+		String line;
+		ArrayList<InputRow> allData = new ArrayList<>();
+		while ((line = br.readLine()) != null) {
+			allData.add(new InputRow(line));
+
+		}
+		return allData;
 	}
 }
