@@ -34,7 +34,6 @@ The languages I'm going to try to classify:
   - Romanian: https://ro.wikipedia.org/wiki/Special:Aleatoriu
   - Samoan: https://sm.wikipedia.org/wiki/Gagana_fa%27a_S%C4%81moa
   - Spanish: https://es.wikipedia.org/wiki/Especial:Aleatoria
-  - Vietnamese: https://vi.wikipedia.org/wiki/%C4%90%E1%BA%B7c_bi%E1%BB%87t:Ng%E1%BA%ABu_nhi%C3%AAn
   
 These languages are strategically chosen:
   - They all have latin characters
