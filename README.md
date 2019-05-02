@@ -13,10 +13,18 @@ The techniques I'm going to explore:
   
 Feature selection:
   - specific words (the, a, an, and their equivalents)
+    - mutation: pick a new word, given the entire list of words, with the proportional probability to the word count
+    - crossover: blends don't make sense, so just return one of the parents
   - a word ends with a sequence of characters
+    - mutation: add/remove a random character, drawn from the distribution of letters
+    - crossover: all sub-sequences from the two suffixes blended
   - a word starts with a sequence of characters
+    - mutation & crossover is similar to word endings
   - a word contains a sequence of characters
+    - mutation & crossover is similar to word endings and starts
   - letter count of one letter greater than another letter
+    - mutation: one letter changes according to the distribution of letters
+    - crossover: the 4 combinations of two letter combinations
   
 Multiple classification:
   - since there's many languages to decide between, I'm going to use binary classifiers in a one vs one approach.
