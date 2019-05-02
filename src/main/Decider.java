@@ -1,5 +1,7 @@
 package main;
 
+import helper.WeightedList;
+
 import java.io.*;
 import java.util.List;
 
