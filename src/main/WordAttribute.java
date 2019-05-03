@@ -10,14 +10,15 @@ public class WordAttribute extends Attributes {
 
 	/** The word that gets tested if there is a word equal to this. */
 	private final String word;
+	private final double fitness;
 
 	/***
 	 * Creates an attribute that tests if the input has the specified word.
 	 * @param word The word to check that any of the input words match.
 	 */
 	WordAttribute(String word, List<InputRow> inputs, String languageOne, String languageTwo) {
-		super(inputs, languageOne, languageTwo);
 		this.word = word;
+		this.fitness = Attributes.fitness(this, inputs, languageOne, languageTwo);
 	}
 
 	@Override
@@ -32,6 +33,11 @@ public class WordAttribute extends Attributes {
 	@Override
 	public String name() {
 		return "One of the words is '" + word + "'";
+	}
+
+	@Override
+	public double getFitness() {
+		return fitness;
 	}
 
 	@Override

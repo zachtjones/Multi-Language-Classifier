@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class MultiClassifier implements Serializable, Decider {
 
-	/** Holds a list of all the decision trees to */
+	/** Holds a list of all the binary classifiers. */
 	private List<Decider> allTrees;
 
 

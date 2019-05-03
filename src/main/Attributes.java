@@ -9,18 +9,10 @@ import java.util.Set;
 
 public abstract class Attributes implements Serializable, Comparable<Attributes> {
 
-	/** The fitness cached. */
-	private final double fitness;
-
-	/** Caches the fitness, calculated from the inputs, languageOne, and languageTwo */
-	public Attributes(List<InputRow> inputs, String languageOne, String languageTwo) {
-		this.fitness = fitness(inputs, languageOne, languageTwo);
-	}
-
 	@Override
 	public int compareTo(Attributes other) {
 		// sort by the fitness, then name to split ties (don't want to attributes that are equivalent)
-		int result = Double.compare(this.fitness, other.fitness);
+		int result = Double.compare(this.getFitness(), other.getFitness());
 		if (result == 0) {
 			return this.name().compareTo(other.name());
 		} else {
@@ -51,9 +43,9 @@ public abstract class Attributes implements Serializable, Comparable<Attributes>
 	 * @param languageTwo The second language
 	 * @return The fitness calculation.
 	 */
-	private double fitness(List<InputRow> inputs, String languageOne, String languageTwo) {
+	public static double fitness(Attributes thing, List<InputRow> inputs, String languageOne, String languageTwo) {
 		Set<Attributes> justThis = new HashSet<>();
-		justThis.add(this);
+		justThis.add(thing);
 
 		Decider tree = DecisionTree.learn(
 			new WeightedList<>(inputs), 1, justThis, inputs.size(), languageOne, languageTwo);
@@ -63,9 +55,7 @@ public abstract class Attributes implements Serializable, Comparable<Attributes>
 	}
 
 	/** returns the fitness cached */
-	public double getFitness() {
-		return fitness;
-	}
+	public abstract double getFitness();
 
 	/**
 	 * Returning another attribute that is based on this, but slightly different.
