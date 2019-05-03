@@ -7,7 +7,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class Attributes implements Serializable {
+public abstract class Attributes implements Serializable, Comparable<Attributes> {
+
+	/** The fitness cached. */
+	private final double fitness;
+
+	/** Caches the fitness, calculated from the inputs, languageOne, and languageTwo */
+	public Attributes(List<InputRow> inputs, String languageOne, String languageTwo) {
+		this.fitness = fitness(inputs, languageOne, languageTwo);
+	}
+
+	@Override
+	public int compareTo(Attributes other) {
+		// sort by the fitness, then name to split ties (don't want to attributes that are equivalent)
+		int result = Double.compare(this.fitness, other.fitness);
+		if (result == 0) {
+			return this.name().compareTo(other.name());
+		} else {
+			return result;
+		}
+	}
 
 	/** Method to determine if the attribute is true on this input row. */
 	public abstract boolean has(InputRow input);
@@ -32,8 +51,7 @@ public abstract class Attributes implements Serializable {
 	 * @param languageTwo The second language
 	 * @return The fitness calculation.
 	 */
-	public double fitness(List<InputRow> inputs, String languageOne, String languageTwo) {
-		int count = 0;
+	private double fitness(List<InputRow> inputs, String languageOne, String languageTwo) {
 		Set<Attributes> justThis = new HashSet<>();
 		justThis.add(this);
 
@@ -44,10 +62,15 @@ public abstract class Attributes implements Serializable {
 		return 1 - tree.errorRateUnWeighted(inputs);
 	}
 
+	/** returns the fitness cached */
+	public double getFitness() {
+		return fitness;
+	}
+
 	/**
 	 * Returning another attribute that is based on this, but slightly different.
 	 * @param words A list of words to use for the mutation to be a representative sample.
 	 * @return The new attribute, which is a mutation of this.
 	 */
-	public abstract Attributes mutate(List<String> words);
+	public abstract Attributes mutate(List<String> words, List<InputRow> inputs, String languageOne, String languageTwo);
 }

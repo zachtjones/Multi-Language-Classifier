@@ -31,22 +31,16 @@ public class GeneticLearning {
 
 		this.inputs = inputs;
 		// pool is sorted by the fitness of the feature
-		pool = new TreeSet<>((o1, o2) -> {
-			double o1D = o1.fitness(inputs, languageOne, languageTwo);
-			double o2D = o2.fitness(inputs, languageOne, languageTwo);
-			// if tie, keep only want to remove duplicates
-			if (o1D == o2D) return o1.name().compareTo(o2.name());
-			return Double.compare(o1D, o2D);
-		});
+		pool = new TreeSet<>();
 		allWords = new ArrayList<>(inputs.size() * 20);
 		for (InputRow row : inputs) {
 			allWords.addAll(Arrays.asList(row.words));
 		}
 
 		// fill in the pool with some randomly drawn attributes
-		Attributes noUse = new WordAttribute("a");
+		Attributes noUse = new WordAttribute("a", inputs, languageOne, languageTwo);
 		for (int i = 0; i < 20; i++) {
-			pool.add(noUse.mutate(allWords));
+			pool.add(noUse.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
 		// TODO similar process for other attribute types once they are added
@@ -59,19 +53,13 @@ public class GeneticLearning {
 	 */
 	private void nextGeneration(int maxPoolSize) {
 		// mutate some random ones, proportional to their fitness
-		TreeSet<Attributes> newOnes = new TreeSet<>((o1, o2) -> {
-			double o1D = o1.fitness(inputs, languageOne, languageTwo);
-			double o2D = o2.fitness(inputs, languageOne, languageTwo);
-			// if tie, keep only want to remove duplicates
-			if (o1D == o2D) return o1.name().compareTo(o2.name());
-			return Double.compare(o1D, o2D);
-		});
+		TreeSet<Attributes> newOnes = new TreeSet<>();
 
 		for (Attributes i : pool) {
-			double chance = i.fitness(inputs, languageOne, languageTwo);
+			double chance = i.getFitness();
 			if (r.nextDouble() < chance) {
 				// do the mutation and add it to the pool
-				newOnes.add(i.mutate(allWords));
+				newOnes.add(i.mutate(allWords, inputs, languageOne, languageTwo));
 			}
 		}
 

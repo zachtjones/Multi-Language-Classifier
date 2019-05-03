@@ -36,6 +36,8 @@ public class MultiClassifier implements Serializable, Decider {
 
 			System.out.println("\nLearning binary classifier between " + first + " and " + second);
 
+			// TODO see if a copy and remove if is faster, but first see which part is slow
+
 			List<InputRow> twoLanguages = rows.stream()
 				.filter(i -> i.outputValue.equals(first) || i.outputValue.equals(second))
 				.collect(Collectors.toList());
@@ -54,7 +56,7 @@ public class MultiClassifier implements Serializable, Decider {
 
 			// determine accuracy
 			System.out.print("Accuracy of binary classification: ");
-			System.out.println(100 * (1 -newTree.errorRateUnWeighted(twoLanguages)));
+			System.out.println(100 * (1 - newTree.errorRateUnWeighted(twoLanguages)));
 
 			allTrees.add(newTree);
 		}
