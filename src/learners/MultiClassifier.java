@@ -25,9 +25,13 @@ public class MultiClassifier implements Serializable, Decider {
 	 * First figures out the attributes for each pair of languages, and then learns a decision tree on each.
 	 * @param rows The List of labeled input.
 	 * @param depth The depth of the trees.
+	 * @param numberGenerations The number of generations on the genetic algorithm
+	 * @param poolSize The number of attributes to keep in the pool
+	 * @param printBinaryAccuracy Whether to print out the accuracy of the binary deciders or not
 	 * @return A multi-classifier based on simple decision trees.
 	 */
-	public static MultiClassifier learnDecisionTree(List<InputRow> rows, int depth) {
+	public static MultiClassifier learnDecisionTree(List<InputRow> rows, int depth,
+													int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
 		List<Pair<String, String>> languagePairs = Learning.languagePairs;
 
 		List<Decider> allTrees = new ArrayList<>();
@@ -37,8 +41,6 @@ public class MultiClassifier implements Serializable, Decider {
 			String first = pair.one;
 			String second = pair.two;
 
-			System.out.println("\nLearning binary classifier between " + first + " and " + second);
-
 			// TODO see if a copy and remove if is faster, but first see which part is slow
 
 			List<InputRow> twoLanguages = rows.stream()
@@ -47,19 +49,18 @@ public class MultiClassifier implements Serializable, Decider {
 
 			// TODO make number of generations and pool size a parameter
 			Set<Attributes> attributes =
-				GeneticLearning.learnAttributes(twoLanguages, first, second, 50, 12);
+				GeneticLearning.learnAttributes(twoLanguages, first, second, numberGenerations, poolSize);
 
 			// learn a decision tree based on the attributes, with depth
 			Decider newTree = DecisionTree.learn(
 				new WeightedList<>(twoLanguages), depth, attributes, twoLanguages.size(), first, second
 			);
 
-			// print out the new tree
-			System.out.println("Learned:\n" + newTree.representation(0));
-
 			// determine accuracy
-			System.out.print("Accuracy of binary classification: ");
-			System.out.println(100 * (1 - newTree.errorRateUnWeighted(twoLanguages)));
+			if (printBinaryAccuracy) {
+				System.out.print("Binary classifier training accuracy (" + first + " vs " + second + "): ");
+				System.out.println(100 * (1 - newTree.errorRateUnWeighted(twoLanguages)));
+			}
 
 			allTrees.add(newTree);
 		}

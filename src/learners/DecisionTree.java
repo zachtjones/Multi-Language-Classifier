@@ -42,13 +42,10 @@ public class DecisionTree implements Decider {
 
 		// count how many have output LanguageOne
 		long countOne = allData.stream().filter(i -> i.two.outputValue.equals(languageOne)).count();
-		System.out.print("\nDeciding on how to split: " + countOne + " E, " + (allData.size() - countOne) + " D.");
 
 		// base case 1: there is no levels left to iterate - make a definite decision.
 		if (levelLeft == 0) {
-			System.out.print("  no tree depth left, picking the majority.");
 			// return the majority
-			System.out.print("  entropy is: " + entropyForList(allData, languageOne) * allData.size() / totalSize);
 			if (countOne > allData.size() / 2) {
 				return AbsoluteDecider.fromLanguage(languageOne);
 			}
@@ -74,9 +71,6 @@ public class DecisionTree implements Decider {
 		}
 		Attributes best = result.get().one;
 
-		System.out.print("------------\nBest chosen: " + best.name());
-		System.out.print("------------");
-
 		WeightedList<InputRow> trueOnes = allData.valuesWith(best::has);
 		WeightedList<InputRow> falseOnes = allData.valuesWith(best::doesntHave);
 		// need copies so they don't modify each other
@@ -95,19 +89,13 @@ public class DecisionTree implements Decider {
 
 	/** Returns the entropy associated with a decision to split on attribute index. */
 	private static double entropyForDecision(Attributes attribute, WeightedList<InputRow> allData, int totalSize, String languageOne) {
-		System.out.print("  What about: " + attribute.name() + " ?");
 		// split into the two sets - calculate entropy on each
 		WeightedList<InputRow> falseOnes = allData.valuesWith(attribute::doesntHave);
 		WeightedList<InputRow> trueOnes = allData.valuesWith(attribute::has);
 
-		System.out.print("    x[i] = true: " + trueOnes.size());
-		System.out.print("    x[i] = false: " + falseOnes.size());
-
 		// entropy for each half * the proportion of the whole it is.
-		double entropy = (double)trueOnes.size() / totalSize * entropyForList(trueOnes, languageOne) +
+		return (double)trueOnes.size() / totalSize * entropyForList(trueOnes, languageOne) +
 			(double) falseOnes.size() / totalSize * entropyForList(falseOnes, languageOne);
-		System.out.print("    entropy: " + entropy + "\n");
-		return entropy;
 	}
 
 	/** Returns the entropy for a list of data in bits. */
@@ -119,8 +107,6 @@ public class DecisionTree implements Decider {
 		// arbitrary - defined first to be true (doesn't matter since symmetric distribution).
 		double eAmount = allData.valuesWith(i -> i.outputValue.equals(languageOne)).totalWeight();
 
-		//System.out.println("A count: " + eAmount);
-		//System.out.println("B count: " + (total - eAmount));
 		return entropyForBoolean(eAmount / total);
 	}
 
