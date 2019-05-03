@@ -64,6 +64,8 @@ public class Learning {
 
 	public static void main(String[] args) throws IOException {
 
+		long startTime = System.currentTimeMillis();
+
 		// examples of legal args:
 		//  examples testing.txt 200  // writes to testing.txt 200 examples of each language, gathered from Wikipedia
 		//  learn decisionTree training.txt 1 learnerOut.dat
@@ -102,7 +104,7 @@ public class Learning {
 
 					// evaluate learner
 					double accuracyPercent = 100 * (1 - m.errorRateUnWeighted(rows));
-					System.out.println("Learning accuracy: " + accuracyPercent);
+					System.out.println("\n\nOverall learning accuracy: " + accuracyPercent);
 
 					// save to file
 					m.saveTo(outputLearner);
@@ -117,7 +119,7 @@ public class Learning {
 			usage();
 		}
 
-
+		System.out.println("\nRunning time (s) " + (System.currentTimeMillis() - startTime) / 1_000.0);
 	}
 
 	private static void usage() {
