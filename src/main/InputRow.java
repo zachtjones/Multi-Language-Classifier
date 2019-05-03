@@ -12,14 +12,14 @@ import java.util.ArrayList;
  * Represents a row of input to either the training or testing.
  * For simplicity this will arbitrarily label unlabeled data to English.
  */
-class InputRow implements Serializable {
-	final String[] words;
+public class InputRow implements Serializable {
+	public final String[] words;
 	/** Null if unlabeled data */
-	final String outputValue;
+	public final String outputValue;
 
 	/** Parses the input row from text, whether labeled or unlabeled.
 	 * Precondition: text doesn't have the pipe character in it unless to separate label from content. */
-	InputRow(String content) {
+	public InputRow(String content) {
 		final String[] row;
 		if (content.contains("|")) {
 			row = content.split("\\|");

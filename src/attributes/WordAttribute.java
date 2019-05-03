@@ -1,4 +1,6 @@
-package main;
+package attributes;
+
+import main.InputRow;
 
 import java.util.List;
 import java.util.Random;
@@ -16,7 +18,7 @@ public class WordAttribute extends Attributes {
 	 * Creates an attribute that tests if the input has the specified word.
 	 * @param word The word to check that any of the input words match.
 	 */
-	WordAttribute(String word, List<InputRow> inputs, String languageOne, String languageTwo) {
+	public WordAttribute(String word, List<InputRow> inputs, String languageOne, String languageTwo) {
 		this.word = word;
 		this.fitness = Attributes.fitness(this, inputs, languageOne, languageTwo);
 	}

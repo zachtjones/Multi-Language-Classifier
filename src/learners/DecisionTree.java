@@ -1,14 +1,14 @@
-package main;
+package learners;
 
+import attributes.Attributes;
 import helper.Pair;
 import helper.WeightedList;
+import main.*;
 
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-
-import static main.Runner.print;
 
 public class DecisionTree implements Decider {
 
@@ -42,13 +42,13 @@ public class DecisionTree implements Decider {
 
 		// count how many have output LanguageOne
 		long countOne = allData.stream().filter(i -> i.two.outputValue.equals(languageOne)).count();
-		print("\nDeciding on how to split: " + countOne + " E, " + (allData.size() - countOne) + " D.");
+		System.out.print("\nDeciding on how to split: " + countOne + " E, " + (allData.size() - countOne) + " D.");
 
 		// base case 1: there is no levels left to iterate - make a definite decision.
 		if (levelLeft == 0) {
-			print("  no tree depth left, picking the majority.");
+			System.out.print("  no tree depth left, picking the majority.");
 			// return the majority
-			print("  entropy is: " + entropyForList(allData, languageOne) * allData.size() / totalSize);
+			System.out.print("  entropy is: " + entropyForList(allData, languageOne) * allData.size() / totalSize);
 			if (countOne > allData.size() / 2) {
 				return AbsoluteDecider.fromLanguage(languageOne);
 			}
@@ -74,8 +74,8 @@ public class DecisionTree implements Decider {
 		}
 		Attributes best = result.get().one;
 
-		print("------------\nBest chosen: " + best.name());
-		print("------------");
+		System.out.print("------------\nBest chosen: " + best.name());
+		System.out.print("------------");
 
 		WeightedList<InputRow> trueOnes = allData.valuesWith(best::has);
 		WeightedList<InputRow> falseOnes = allData.valuesWith(best::doesntHave);
@@ -95,18 +95,18 @@ public class DecisionTree implements Decider {
 
 	/** Returns the entropy associated with a decision to split on attribute index. */
 	private static double entropyForDecision(Attributes attribute, WeightedList<InputRow> allData, int totalSize, String languageOne) {
-		print("  What about: " + attribute.name() + " ?");
+		System.out.print("  What about: " + attribute.name() + " ?");
 		// split into the two sets - calculate entropy on each
 		WeightedList<InputRow> falseOnes = allData.valuesWith(attribute::doesntHave);
 		WeightedList<InputRow> trueOnes = allData.valuesWith(attribute::has);
 
-		print("    x[i] = true: " + trueOnes.size());
-		print("    x[i] = false: " + falseOnes.size());
+		System.out.print("    x[i] = true: " + trueOnes.size());
+		System.out.print("    x[i] = false: " + falseOnes.size());
 
 		// entropy for each half * the proportion of the whole it is.
 		double entropy = (double)trueOnes.size() / totalSize * entropyForList(trueOnes, languageOne) +
 			(double) falseOnes.size() / totalSize * entropyForList(falseOnes, languageOne);
-		print("    entropy: " + entropy + "\n");
+		System.out.print("    entropy: " + entropy + "\n");
 		return entropy;
 	}
 
@@ -153,8 +153,8 @@ public class DecisionTree implements Decider {
 	public String representation(int numSpaces) {
 		// I'm making it like a code block.
 		return "if " + splitOn.name() + " then: \n" +
-			Adaboost.numSpaces(numSpaces + 2) + right.representation(numSpaces + 2) + "\n" +
-			Adaboost.numSpaces(numSpaces) + "else: \n" +
-			Adaboost.numSpaces(numSpaces + 2) + left.representation(numSpaces + 2);
+			Learning.numSpaces(numSpaces + 2) + right.representation(numSpaces + 2) + "\n" +
+			Learning.numSpaces(numSpaces) + "else: \n" +
+			Learning.numSpaces(numSpaces + 2) + left.representation(numSpaces + 2);
 	}
 }

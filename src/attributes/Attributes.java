@@ -1,6 +1,9 @@
-package main;
+package attributes;
 
 import helper.WeightedList;
+import learners.DecisionTree;
+import learners.Decider;
+import main.InputRow;
 
 import java.io.Serializable;
 import java.util.HashSet;

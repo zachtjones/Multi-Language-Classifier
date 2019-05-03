@@ -1,7 +1,10 @@
-package main;
+package learners;
 
 import helper.Pair;
 import helper.WeightedList;
+import attributes.Attributes;
+import main.InputRow;
+import main.Learning;
 
 import java.io.Serializable;
 import java.util.*;
@@ -24,7 +27,7 @@ public class MultiClassifier implements Serializable, Decider {
 	 * @param depth The depth of the trees.
 	 * @return A multi-classifier based on simple decision trees.
 	 */
-	static MultiClassifier learnDecisionTree(List<InputRow> rows, int depth) {
+	public static MultiClassifier learnDecisionTree(List<InputRow> rows, int depth) {
 		List<Pair<String, String>> languagePairs = Learning.languagePairs;
 
 		List<Decider> allTrees = new ArrayList<>();

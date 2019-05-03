@@ -1,4 +1,6 @@
-package main;
+package learners;
+
+import main.InputRow;
 
 import java.util.HashMap;
 import java.util.Map;

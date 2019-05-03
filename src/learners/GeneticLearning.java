@@ -1,4 +1,8 @@
-package main;
+package learners;
+
+import attributes.Attributes;
+import attributes.WordAttribute;
+import main.InputRow;
 
 import java.util.*;
 

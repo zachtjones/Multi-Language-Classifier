@@ -1,6 +1,7 @@
-package main;
+package learners;
 
 import helper.WeightedList;
+import main.InputRow;
 
 import java.io.*;
 import java.util.List;

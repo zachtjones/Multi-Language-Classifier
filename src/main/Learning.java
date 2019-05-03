@@ -2,6 +2,7 @@ package main;
 
 import examples.GetWikipediaContent;
 import helper.Pair;
+import learners.MultiClassifier;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -128,5 +129,10 @@ public class Learning {
 			"\tlearn decisionTree [exampleFile] [depth] [learnerFile]\n" +
 			"\ttest [exampleFile] [learnerFile]");
 		System.exit(0);
+	}
+
+	/** Creates a string of length numSpaces comprised of spaces. */
+	public static String numSpaces(int numSpaces) {
+		return new String(new char[numSpaces]).replace('\0', ' ');
 	}
 }
