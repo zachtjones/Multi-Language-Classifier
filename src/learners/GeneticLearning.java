@@ -1,6 +1,7 @@
 package learners;
 
 import attributes.Attributes;
+import attributes.LetterFrequencyAttribute;
 import attributes.WordAttribute;
 import main.InputRow;
 
@@ -47,6 +48,12 @@ public class GeneticLearning {
 			pool.add(noUse.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
+		// letter frequency
+		Attributes noUseLetters = new LetterFrequencyAttribute('a', 'z', inputs, languageOne, languageTwo);
+		for (int i = 0; i < 20; i++) {
+			pool.add(noUseLetters.mutate(allWords, inputs, languageOne, languageTwo));
+		}
+
 		// TODO similar process for other attribute types once they are added
 
 	}
@@ -68,7 +75,6 @@ public class GeneticLearning {
 		}
 
 		// TODO add the crossover once that's implemented
-
 
 		// add the new ones to the list
 		pool.addAll(newOnes);
