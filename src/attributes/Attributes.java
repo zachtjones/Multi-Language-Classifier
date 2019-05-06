@@ -1,14 +1,9 @@
 package attributes;
 
-import helper.WeightedList;
-import learners.DecisionTree;
-import learners.Decider;
 import main.InputRow;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public abstract class Attributes implements Serializable, Comparable<Attributes> {
 
@@ -41,20 +36,40 @@ public abstract class Attributes implements Serializable, Comparable<Attributes>
 
 	/***
 	 * Calculates the fitness of this attribute on a scale of 0 to 1.0, based on the percent.
+	 * Precondition: all the elements are one of the two languages.
 	 * @param inputs The list of inputs that are used to test the attribute
 	 * @param languageOne The first language to test
-	 * @param languageTwo The second language
 	 * @return The fitness calculation.
 	 */
-	public static double fitness(Attributes thing, List<InputRow> inputs, String languageOne, String languageTwo) {
-		Set<Attributes> justThis = new HashSet<>();
-		justThis.add(thing);
+	static double fitness(Attributes thing, List<InputRow> inputs, String languageOne) {
 
-		Decider tree = DecisionTree.learn(
-			new WeightedList<>(inputs), 1, justThis, inputs.size(), languageOne, languageTwo);
+		// could see the best decision tree that could be learned from this attribute,
+		//   but it's faster to do this way since there's a lot of simplification that can be done:
+		// One: the inputs are always unweighted
+		// Two: the tree is only 1 deep
+		//   - don't have to iterate through all 3x, and create the two sub-lists to handle each definite decision
 
-		// test the tree error weight
-		return 1 - tree.errorRateUnWeighted(inputs);
+		int countHasLangOne = 0;
+		int countHasLangTwo = 0;
+		int countNoLangOne = 0;
+		int countNoLangTwo = 0;
+
+		for (InputRow r : inputs) {
+			if (thing.has(r)) {
+				if (r.outputValue.equals(languageOne)) countHasLangOne++;
+				else countHasLangTwo++;
+			} else {
+				if (r.outputValue.equals(languageOne)) countNoLangOne++;
+				else countNoLangTwo++;
+			}
+		}
+
+		// for each part, pick the larger side -- what the decision tree would do
+		double correctHas = Math.max(countHasLangOne, countHasLangTwo);
+		double correctNo = Math.max(countNoLangOne, countNoLangTwo);
+
+		return (correctHas + correctNo) / (countHasLangOne + countHasLangTwo + countNoLangOne + countNoLangTwo);
+
 	}
 
 	/** returns the fitness cached */

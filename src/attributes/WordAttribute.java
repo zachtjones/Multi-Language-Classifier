@@ -18,9 +18,9 @@ public class WordAttribute extends Attributes {
 	 * Creates an attribute that tests if the input has the specified word.
 	 * @param word The word to check that any of the input words match.
 	 */
-	public WordAttribute(String word, List<InputRow> inputs, String languageOne, String languageTwo) {
+	public WordAttribute(String word, List<InputRow> inputs, String languageOne) {
 		this.word = word;
-		this.fitness = Attributes.fitness(this, inputs, languageOne, languageTwo);
+		this.fitness = Attributes.fitness(this, inputs, languageOne);
 	}
 
 	@Override
@@ -48,6 +48,6 @@ public class WordAttribute extends Attributes {
 		//  more likely be a good guess
 		Random r = new Random();
 		int index = r.nextInt(words.size());
-		return new WordAttribute(words.get(index), inputs, languageOne, languageTwo);
+		return new WordAttribute(words.get(index), inputs, languageOne);
 	}
 }

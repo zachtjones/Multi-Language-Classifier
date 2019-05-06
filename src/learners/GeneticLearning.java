@@ -43,13 +43,13 @@ public class GeneticLearning {
 		}
 
 		// fill in the pool with some randomly drawn attributes
-		Attributes noUse = new WordAttribute("a", inputs, languageOne, languageTwo);
+		Attributes noUse = new WordAttribute("a", inputs, languageOne);
 		for (int i = 0; i < 20; i++) {
 			pool.add(noUse.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
 		// letter frequency
-		Attributes noUseLetters = new LetterFrequencyAttribute('a', 'z', inputs, languageOne, languageTwo);
+		Attributes noUseLetters = new LetterFrequencyAttribute('a', 'z', inputs, languageOne);
 		for (int i = 0; i < 20; i++) {
 			pool.add(noUseLetters.mutate(allWords, inputs, languageOne, languageTwo));
 		}
