@@ -102,7 +102,7 @@ public class Learning {
 	}
 
 	/** Holds a list of all the languages. */
-	private static List<String> languages = getLanguageUrls().stream().map(i -> i.one).collect(Collectors.toList());
+	public final static List<String> languages = getLanguageUrls().stream().map(i -> i.one).collect(Collectors.toList());
 
 	/***
 	 * Holds all the pairs of languages that could be used, but in alphabetical order for the languages.

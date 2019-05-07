@@ -32,22 +32,19 @@ public class MultiClassifier implements Serializable, Decider {
 	 */
 	public static MultiClassifier learnDecisionTree(List<InputRow> rows, int depth,
 													int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
+
 		List<Pair<String, String>> languagePairs = Learning.languagePairs;
 
-		List<Decider> allTrees = new ArrayList<>();
-
-		for (Pair<String, String> pair : languagePairs) {
-
+		// each sub-problem: learning to distinguish a pair of languages
+		//   - can run each of these sub-problems in parallel
+		List<Decider> allTrees = languagePairs.parallelStream().map(pair -> {
 			String first = pair.one;
 			String second = pair.two;
-
-			// TODO see if a copy and remove if is faster, but first see which part is slow
 
 			List<InputRow> twoLanguages = rows.stream()
 				.filter(i -> i.outputValue.equals(first) || i.outputValue.equals(second))
 				.collect(Collectors.toList());
 
-			// TODO make number of generations and pool size a parameter
 			Set<Attributes> attributes =
 				GeneticLearning.learnAttributes(twoLanguages, first, second, numberGenerations, poolSize);
 
@@ -58,12 +55,15 @@ public class MultiClassifier implements Serializable, Decider {
 
 			// determine accuracy
 			if (printBinaryAccuracy) {
-				System.out.print("Binary classifier training accuracy (" + first + " vs " + second + "): ");
-				System.out.println(100 * (1 - newTree.errorRateUnWeighted(twoLanguages)));
+				// each line is important to not be split, have to synchronize on system.out
+				synchronized (System.out) {
+					System.out.print("Binary classifier training accuracy (" + first + " vs " + second + "): ");
+					System.out.println(100 * (1 - newTree.errorRateUnWeighted(twoLanguages)));
+				}
 			}
+			return newTree;
 
-			allTrees.add(newTree);
-		}
+		}).collect(Collectors.toList());
 
 		return new MultiClassifier(allTrees);
 	}
