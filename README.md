@@ -58,3 +58,22 @@ These languages are strategically chosen:
 
 
 Given a phrase in one of the languages below, the program can detect and correctly classify the language, using machine learning techniques on training data.
+
+## Results
+
+![results graph](accuracy.png)
+
+The above graph shows the tree depth and accuracy.
+This is with just the following features implemented:
+  - genetic algorithm for feature selection
+  - word matching feature
+  - letter frequency feature
+  - decision trees learning
+  
+The above shows that the accuracy is just short of 95%
+with the testing.txt file, using the training.txt for learning.
+
+Overfitting starts to play a part once the depth of the trees exceeds 6.
+
+Each iteration of the training took around 3 seconds.
+
