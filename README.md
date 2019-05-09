@@ -76,10 +76,12 @@ Given a phrase in one of the languages below, the program can detect and correct
 The above graph shows the tree depth and accuracy.
 This is with just the decision tree learning algorithms.
 
-The above shows that the accuracy is just short of 95%
-with the testing.txt file, using the training.txt for learning.
+Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
+with varying tree depth (1-10).
+
+The above shows that the testing accuracy peaks at just above 95%.
 
 Overfitting starts to play a part once the depth of the trees exceeds 6.
 
-Each iteration of the training took around 3 seconds.
+Each iteration of the training took around 12 seconds on my 4 core computer.
 
