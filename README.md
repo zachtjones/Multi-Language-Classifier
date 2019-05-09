@@ -69,7 +69,7 @@ Given a phrase in one of the languages below, the program can detect and correct
     - might decide to do a different way of the multi-classification
 
 
-## Results
+## Results - Decision Tree
 
 ![results graph](accuracy.png)
 
@@ -79,7 +79,7 @@ This is with just the decision tree learning algorithms.
 Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
 with varying tree depth (1-10).
 
-The above shows that the testing accuracy peaks at just above 95%.
+The above shows that the testing accuracy peaks at 95.9%.
 
 Overfitting starts to play a part once the depth of the trees exceeds 6.
 
