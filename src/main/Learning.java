@@ -157,6 +157,8 @@ public class Learning {
 					rows, treeDepth, numberGenerations, poolSize, printBinaryAccuracy
 				);
 
+				//System.out.println(m.representation(0));
+
 				// evaluate learner
 				double accuracyPercent = 100 * (1 - m.errorRateUnWeighted(rows));
 				System.out.println("Training accuracy: " + accuracyPercent);
