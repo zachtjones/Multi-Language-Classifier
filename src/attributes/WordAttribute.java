@@ -34,7 +34,7 @@ public class WordAttribute extends Attributes {
 
 	@Override
 	public String name() {
-		return "One of the words is '" + word + "'";
+		return "a word is '" + word + "'";
 	}
 
 	@Override

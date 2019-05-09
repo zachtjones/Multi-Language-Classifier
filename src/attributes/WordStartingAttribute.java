@@ -12,8 +12,8 @@ public class WordStartingAttribute extends Attributes {
     private final double fitness;
 
     /** Creates a word start attribute, given the start, and the inputs and language used to calculate fitness. */
-    public WordStartingAttribute(String ending, List<InputRow> inputs, String languageOne) {
-        this.start = ending;
+    public WordStartingAttribute(String start, List<InputRow> inputs, String languageOne) {
+        this.start = start;
         this.fitness = Attributes.fitness(this, inputs, languageOne);
     }
 
@@ -28,7 +28,7 @@ public class WordStartingAttribute extends Attributes {
 
     @Override
     public String name() {
-        return "word starts with '" + start + "'";
+        return "a word starts with '" + start + "'";
     }
 
     @Override

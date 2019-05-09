@@ -59,19 +59,23 @@ These languages are strategically chosen:
 
 Given a phrase in one of the languages below, the program can detect and correctly classify the language, using machine learning techniques on training data.
 
+
+## Tasks left to implement
+
+  - Boosting on the decision trees, and threshold/weighted testing
+  - Neural network learning
+    - using linear combinations at each node (result = a + bx + cy + dz + ..., where a-... are learned weights)
+    - customize the amount of hidden layers (0+) and the number of nodes per hidden layer
+    - might decide to do a different way of the multi-classification
+
+
 ## Results
 
 ![results graph](accuracy.png)
 
 The above graph shows the tree depth and accuracy.
-This is with just the following features implemented:
-  - genetic algorithm for feature selection
-  - word matching feature
-  - letter frequency feature
-  - word ending feature
-  - word starting feature
-  - decision trees learning
-  
+This is with just the decision tree learning algorithms.
+
 The above shows that the accuracy is just short of 95%
 with the testing.txt file, using the training.txt for learning.
 

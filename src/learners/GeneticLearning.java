@@ -64,8 +64,11 @@ public class GeneticLearning {
 			pool.add(noUseStarting.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
-		// TODO similar process for other attribute types once they are added
-
+		// word contains
+		Attributes noUseContaining = new WordContainsAttribute("", inputs, languageOne);
+		for (int i = 0; i < 20; i++) {
+			pool.add(noUseContaining.mutate(allWords, inputs, languageOne, languageTwo));
+		}
 	}
 
 	/**

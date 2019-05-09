@@ -28,7 +28,7 @@ public class WordEndingAttribute extends Attributes {
 
     @Override
     public String name() {
-        return "word ends with '" + ending + "'";
+        return "a word ends with '" + ending + "'";
     }
 
     @Override
