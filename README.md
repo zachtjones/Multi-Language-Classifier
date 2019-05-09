@@ -68,6 +68,8 @@ This is with just the following features implemented:
   - genetic algorithm for feature selection
   - word matching feature
   - letter frequency feature
+  - word ending feature
+  - word starting feature
   - decision trees learning
   
 The above shows that the accuracy is just short of 95%

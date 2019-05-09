@@ -1,9 +1,6 @@
 package learners;
 
-import attributes.Attributes;
-import attributes.LetterFrequencyAttribute;
-import attributes.WordAttribute;
-import attributes.WordEndingAttribute;
+import attributes.*;
 import main.InputRow;
 
 import java.util.*;
@@ -59,6 +56,12 @@ public class GeneticLearning {
 		Attributes noUseEnding = new WordEndingAttribute("", inputs, languageOne);
 		for (int i = 0; i < 20; i++) {
 			pool.add(noUseEnding.mutate(allWords, inputs, languageOne, languageTwo));
+		}
+
+		// word starting
+		Attributes noUseStarting = new WordStartingAttribute("", inputs, languageOne);
+		for (int i = 0; i < 20; i++) {
+			pool.add(noUseStarting.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
 		// TODO similar process for other attribute types once they are added
