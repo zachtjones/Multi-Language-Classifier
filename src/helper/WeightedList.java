@@ -80,4 +80,9 @@ public class WeightedList<T extends Serializable> implements Serializable {
 	public Pair<Double, T> get(int index) {
 		return values.get(index);
 	}
+
+	/** Returns the item at the index. */
+    public T getItem(int index) {
+		return values.get(index).two;
+    }
 }
