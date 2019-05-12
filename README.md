@@ -73,8 +73,7 @@ Given a phrase in one of the languages below, the program can detect and correct
 
 ![results graph](accuracy.png)
 
-The above graph shows the tree depth and accuracy.
-This is with just the decision tree learning algorithms.
+The above graph shows the Decision Tree accuracy vs depth.
 
 Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
 with varying tree depth (1-10).
@@ -85,3 +84,16 @@ Overfitting starts to play a part once the depth of the trees exceeds 6.
 
 Each iteration of the training took around 12 seconds on my 4 core computer.
 
+## Result - Adaptive Boosting
+
+![Adaptive boosting graph](boosting.png)
+
+The above graph shows the Adaptive Boosting accuracy vs ensemble size.
+
+Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
+with varying ensemble size (1-15).
+
+The above shows that the testing accuracy peaks at 97.2%.
+
+Each iteration of training took around 14 seconds, with the time only slightly increasing
+with larger ensemble sizes. The attribute learning took much of the time.
