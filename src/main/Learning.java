@@ -179,7 +179,7 @@ public class Learning {
 
 			}
 
-			System.out.println(m.representation(0));
+			//System.out.println(m.representation(0));
 
 
 			// evaluate learner

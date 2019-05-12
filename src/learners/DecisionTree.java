@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class DecisionTree implements Decider {
 
@@ -21,6 +22,16 @@ public class DecisionTree implements Decider {
 		this.left = left;
 		this.right = right;
 		this.splitOn = splitOn;
+	}
+
+	private static Predicate<Pair<Double, InputRow>> languageIs(String language) {
+
+		return new Predicate<Pair<Double, InputRow>>() {
+			@Override
+			public boolean test(Pair<Double, InputRow> i) {
+				return i.two.outputValue.equals(language);
+			}
+		};
 	}
 
 	/**
@@ -41,12 +52,13 @@ public class DecisionTree implements Decider {
 
 
 		// count how many have output LanguageOne
-		long countOne = allData.stream().filter(i -> i.two.outputValue.equals(languageOne)).count();
+		long countOne = allData.stream().filter(languageIs(languageOne)).count();
 
 		// base case 1: there is no levels left to iterate - make a definite decision.
 		if (levelLeft == 0) {
-			// return the majority
-			if (countOne > allData.size() / 2) {
+			// return the majority by total weight
+			double weightOne = allData.stream().filter(languageIs(languageOne)).mapToDouble(i -> i.one).sum();
+			if (weightOne > 0.5 * allData.totalWeight()) {
 				return AbsoluteDecider.fromLanguage(languageOne);
 			}
 			return AbsoluteDecider.fromLanguage(languageTwo);
