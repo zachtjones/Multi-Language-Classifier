@@ -27,11 +27,12 @@ public class Learning {
 	private static String testingFile;
 
 	// learning
-	private static String method = "decisionTree"; // just decisionTree so far
+	private static String method = "decisionTree"; // decisionTree or AdaBoost
 	private static String learnerFile;
 	private static int numberGenerations = 50;
 	private static int poolSize = 12;
 	private static int treeDepth = 6;
+	private static int ensembleSize = 6; // learners in the AdaBoost ensemble
 
 	// extra printing
 	private static boolean printBinaryAccuracy = false;
@@ -43,7 +44,8 @@ public class Learning {
 			if (i.equals("examples")) isDownloadingExamples = true;
 			if (i.equals("learn")) isLearning = true;
 			if (i.equals("test")) isTesting = true;
-			if (i.equals("decisionTree")) method = "decisionTree";
+			if (i.equalsIgnoreCase("decisionTree")) method = "decisionTree";
+			if (i.equalsIgnoreCase("adaboost")) method = "adaboost";
 
 			// files
 			if (i.startsWith("examplesFile="))
@@ -62,6 +64,8 @@ public class Learning {
 				poolSize = Integer.parseInt(i.replace("poolSize=", ""));
 			if (i.startsWith("treeDepth"))
 				treeDepth = Integer.parseInt(i.replace("treeDepth=", ""));
+			if (i.startsWith("ensembleSize"))
+				ensembleSize = Integer.parseInt(i.replace("ensembleSize=", ""));
 
 			// printing stuff
 			if (i.equals("printBinaryAccuracy")) printBinaryAccuracy = true;
@@ -144,30 +148,46 @@ public class Learning {
 			if (examplesFile == null) usage();
 			if (learnerFile == null) usage();
 
-			System.out.printf(
-				"Learning %s, examplesFile=%s, numberGenerations=%d, poolSize=%d, treeDepth=%d, learnerFile=%s%n",
-				method, examplesFile, numberGenerations, poolSize, treeDepth, learnerFile);
+			System.out.printf("Attributes learning using: numberGenerations=%d, poolSize=%d, examplesFile=%s%n",
+				numberGenerations, poolSize, examplesFile);
+
+			// read the inputs
+			List<InputRow> rows = InputRow.loadExamples(examplesFile);
+			final MultiClassifier m;
 
 			if (method.equals("decisionTree")) {
-				// read the inputs
-				List<InputRow> rows = InputRow.loadExamples(examplesFile);
+
+				System.out.printf(
+					"Learning decisionTree, treeDepth=%d, learnerFile=%s%n",
+					treeDepth, learnerFile);
 
 				// learn
-				MultiClassifier m = MultiClassifier.learnDecisionTree(
+				m = MultiClassifier.learnDecisionTree(
 					rows, treeDepth, numberGenerations, poolSize, printBinaryAccuracy
 				);
 
-				//System.out.println(m.representation(0));
+			} else { // adaboost learning algorithm, tree depth 1
 
-				// evaluate learner
-				double accuracyPercent = 100 * (1 - m.errorRateUnWeighted(rows));
-				System.out.println("Training accuracy: " + accuracyPercent);
+				System.out.printf(
+					"Learning AdaBoost on decision tree stumps, ensembleSize=%d, treeDepth=1, learnerFile=%s%n",
+					ensembleSize, learnerFile);
 
-				// save to file
-				m.saveTo(learnerFile);
-			} else {
-				usage();
+				// learn
+				m = MultiClassifier.learnAdaBoost(
+					rows, ensembleSize, numberGenerations, poolSize, printBinaryAccuracy
+				);
+
 			}
+
+			System.out.println(m.representation(0));
+
+
+			// evaluate learner
+			double accuracyPercent = 100 * (1 - m.errorRateUnWeighted(rows));
+			System.out.println("Training accuracy: " + accuracyPercent);
+
+			// save to file
+			m.saveTo(learnerFile);
 		}
 
 		// evaluate a learner
@@ -188,7 +208,7 @@ public class Learning {
 	private static void usage() {
 		System.out.println("Usage: (argument position doesn't matter), optionals are in parentheses\n" +
 			"\texamples examplesFile=  testingFile=  (numberExamples=200)\n" +
-			"\tlearn (decisionTree) examplesFile=   (numberGenerations=50)  (poolSize=12)  (treeDepth=6)  " +
+			"\tlearn (decisionTree | adaboost) examplesFile=   (numberGenerations=50)  (poolSize=12)  (treeDepth=6)  " +
 			"learnerFile=  (printBinaryAccuracy)\n" +
 			"\ttest testingFile=  learnerFile=");
 		System.exit(0);

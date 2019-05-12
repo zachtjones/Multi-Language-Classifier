@@ -1,7 +1,9 @@
 package helper;
 
+import java.io.Serializable;
+
 /** Represents a pair of items */
-public class Pair<T1, T2> {
+public class Pair<T1 extends Serializable, T2 extends Serializable> implements Serializable {
 	public final T1 one;
 	public final T2 two;
 

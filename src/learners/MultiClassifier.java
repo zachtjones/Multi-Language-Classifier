@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 public class MultiClassifier implements Serializable, Decider {
 
 	/** Holds a list of all the binary classifiers. */
-	private List<Decider> allTrees;
+	private List<Decider> deciders;
 
 
-	private MultiClassifier(List<Decider> allTrees) {
-		this.allTrees = allTrees;
+	private MultiClassifier(List<Decider> deciders) {
+		this.deciders = deciders;
 	}
 
 	/**
@@ -28,11 +28,32 @@ public class MultiClassifier implements Serializable, Decider {
 	 * @param numberGenerations The number of generations on the genetic algorithm
 	 * @param poolSize The number of attributes to keep in the pool
 	 * @param printBinaryAccuracy Whether to print out the accuracy of the binary deciders or not
-	 * @return A multi-classifier based on simple decision trees.
+	 * @return A multi-classifier based on simple decision trees for each language pair.
 	 */
 	public static MultiClassifier learnDecisionTree(List<InputRow> rows, int depth,
 													int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
 
+		return learn(rows, true, depth, numberGenerations, poolSize, printBinaryAccuracy);
+	}
+
+	/**
+	 * Learns an Adaptive Boosting ensemble, composed of trees, eacb of depth 1.
+	 * First figures out the attributes for each pair of languages, and then learns a decision tree on each.
+	 * @param rows The List of labeled input.
+	 * @param ensembleSize The number of decision stumps in the ensemble.
+	 * @param numberGenerations The number of generations on the genetic algorithm
+	 * @param poolSize The number of attributes to keep in the pool
+	 * @param printBinaryAccuracy Whether to print out the accuracy of the binary deciders or not
+	 * @return A multi-classifier based on the AdaBoost ensemble for each language pair.
+	 */
+	public static MultiClassifier learnAdaBoost(List<InputRow> rows, int ensembleSize,
+												int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
+
+		return learn(rows, false, ensembleSize, numberGenerations, poolSize, printBinaryAccuracy);
+	}
+
+	private static MultiClassifier learn(List<InputRow> rows, boolean isDecisionTree, int param,
+										 int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
 		List<Pair<String, String>> languagePairs = Learning.languagePairs;
 
 		// each sub-problem: learning to distinguish a pair of languages
@@ -49,19 +70,26 @@ public class MultiClassifier implements Serializable, Decider {
 				GeneticLearning.learnAttributes(twoLanguages, first, second, numberGenerations, poolSize);
 
 			// learn a decision tree based on the attributes, with depth
-			Decider newTree = DecisionTree.learn(
-				new WeightedList<>(twoLanguages), depth, attributes, twoLanguages.size(), first, second
-			);
+			final Decider binaryDecider;
+			if (isDecisionTree) {
+				binaryDecider = DecisionTree.learn(
+					new WeightedList<>(twoLanguages), param, attributes, twoLanguages.size(), first, second
+				);
+			} else {
+				binaryDecider = Adaboost.learn(
+					new WeightedList<>(twoLanguages), param, attributes, first, second
+				);
+			}
 
 			// determine accuracy
 			if (printBinaryAccuracy) {
 				// each line is important to not be split, have to synchronize on system.out
 				synchronized (System.out) {
 					System.out.print("Binary classifier training accuracy (" + first + " vs " + second + "): ");
-					System.out.println(100 * (1 - newTree.errorRateUnWeighted(twoLanguages)));
+					System.out.println(100 * (1 - binaryDecider.errorRateUnWeighted(twoLanguages)));
 				}
 			}
-			return newTree;
+			return binaryDecider;
 
 		}).collect(Collectors.toList());
 
@@ -71,7 +99,7 @@ public class MultiClassifier implements Serializable, Decider {
 	@Override
 	public String decide(InputRow row) {
 		// base on the most number of +1's
-		Map<String, Long> counts = allTrees.stream()
+		Map<String, Long> counts = deciders.stream()
 			.map(i -> i.decide(row)) // stream of decisions
 			.collect(Collectors.groupingBy(i -> i, Collectors.counting())); // map< language, count
 
@@ -84,7 +112,7 @@ public class MultiClassifier implements Serializable, Decider {
 	@Override
 	public String representation(int numSpaces) {
 		return "Learn using the following deciders:\n" +
-			allTrees.stream()
+			deciders.stream()
 				.map(i -> i.representation(numSpaces))
 				.collect(Collectors.joining("\n"));
 	}
