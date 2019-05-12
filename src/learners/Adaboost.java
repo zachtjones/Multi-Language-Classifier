@@ -98,9 +98,9 @@ public class Adaboost implements Decider {
 			double weight = normalizedHypotheses.getWeight(i);
 			String decision = normalizedHypotheses.getItem(i).decide(row);
 			if (decision.equals(languageOne)) {
-				result -= weight;
-			} else {
 				result += weight;
+			} else {
+				result -= weight;
 			}
 		}
 
