@@ -3,6 +3,7 @@ package learners;
 import attributes.Attributes;
 import helper.Pair;
 import helper.WeightedList;
+import helper.MultiLanguageDecision;
 import main.InputRow;
 
 import java.util.Set;
@@ -53,7 +54,7 @@ public class Adaboost implements Decider {
 			double error = 0.0;
 			for (int j = 0; j < inputs.size(); j++) {
 				Pair<Double, InputRow> row = inputs.get(j); // weight, example
-				if (!newHypothesis.decide(row.two).equals(row.two.outputValue)) {
+				if (!newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.outputValue)) {
 					error += row.one;
 				}
 			}
@@ -69,7 +70,7 @@ public class Adaboost implements Decider {
 			double reductionRate = error / (1 - error);
 			for (int j = 0; j < result.inputs.size(); j++) {
 				Pair<Double, InputRow> row = result.inputs.get(j);
-				if (newHypothesis.decide(row.two).equals(row.two.outputValue)) {
+				if (newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.outputValue)) {
 					result.inputs.setWeight(j, result.inputs.getWeight(j) * reductionRate);
 				}
 			}
@@ -86,28 +87,21 @@ public class Adaboost implements Decider {
 
 	/** Represents the ensemble's decision on the input row. */
 	@Override
-	public String decide(InputRow row) {
+	public LanguageDecision decide(InputRow row) {
 
 		// map the first language to -1, and the second language to 1
-
-		double result = 0.0; // middle ground
+		MultiLanguageDecision weights = new MultiLanguageDecision();
 
 		for (int i = 0; i < normalizedHypotheses.size(); i++) {
 
 			// iterate through the hypotheses, weighting their predictions
 			double weight = normalizedHypotheses.getWeight(i);
-			String decision = normalizedHypotheses.getItem(i).decide(row);
-			if (decision.equals(languageOne)) {
-				result += weight;
-			} else {
-				result -= weight;
-			}
+			weights.addWeightTo(normalizedHypotheses.getItem(i).decide(row), weight);
 		}
 
-		return result >= 0 ? languageOne : languageTwo;
+		weights.normalize();
 
-		// TODO see if it gets better results by keeping the uncertainty levels into the multi-classifier
-		//  then the results would be based on the total weight
+		return weights;
 	}
 
 	@Override
