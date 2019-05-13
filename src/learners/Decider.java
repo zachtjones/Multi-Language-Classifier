@@ -1,6 +1,5 @@
 package learners;
 
-import helper.WeightedList;
 import main.InputRow;
 
 import java.io.*;
@@ -9,7 +8,7 @@ import java.util.List;
 public interface Decider extends Serializable {
 
 	/** Returns the decision for the input value */
-	String decide(InputRow row);
+	LanguageDecision decide(InputRow row);
 
 	/** Human readable output for debugging. */
 	String representation(int numSpaces);
@@ -17,21 +16,11 @@ public interface Decider extends Serializable {
 	/** Tests this decider on the input data, and returns the number incorrect / total. */
 	default double errorRateUnWeighted(List<InputRow> testingData) {
 		double total = testingData.size();
-		double correct = testingData.stream().filter(i -> this.decide(i).equals(i.outputValue)).count();
+		double correct = testingData.stream()
+			.filter(i -> this.decide(i).mostConfidentLanguage().equals(i.outputValue))
+			.count();
+
 		return (total - correct) / total;
-	}
-
-	/** Tests this decider on the input data, with weights.
-	 * @param testingData The data to test on. Should be normalized. */
-	default double errorRateWeighted(WeightedList<InputRow> testingData) {
-		double totalWeight = 1.0;
-		// map to <expected, actual>, count the wrong ones.
-		double weightWrong = testingData.stream()
-			.filter(i -> !this.decide(i.two).equals(i.two.outputValue)) // keep wrong ones only
-			.mapToDouble(i -> i.one) // extract the weight
-			.sum(); // total of the weights of wrong ones
-
-		return weightWrong / totalWeight;
 	}
 
 	/** Writes this object using java serialization to the filename. */
