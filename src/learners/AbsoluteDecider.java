@@ -7,7 +7,7 @@ import java.util.Map;
 
 /** Represents an absolute decision on a language.
  * This can be used as part of decision trees or other algorithms. */
-public class AbsoluteDecider implements Decider {
+public class AbsoluteDecider extends LanguageDecision implements Decider {
 
 	/** The language to always pick */
 	private final String language;
@@ -28,12 +28,23 @@ public class AbsoluteDecider implements Decider {
 	}
 
 	@Override
-	public String decide(InputRow row) {
-		return language;
+	public LanguageDecision decide(InputRow row) {
+		return this;
 	}
 
 	@Override
 	public String representation(int numSpaces) {
-		return "return " + language;
+		return "return " + language + ", 1.0 confidence";
+	}
+
+	@Override
+	public double confidenceForLanguage(String language) {
+		if (this.language.equals(language)) return 1.0;
+		return 0;
+	}
+
+	@Override
+	public String mostConfidentLanguage() {
+		return this.language;
 	}
 }
