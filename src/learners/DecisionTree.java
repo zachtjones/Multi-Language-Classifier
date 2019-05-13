@@ -5,10 +5,7 @@ import helper.Pair;
 import helper.WeightedList;
 import main.*;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class DecisionTree implements Decider {
@@ -25,13 +22,7 @@ public class DecisionTree implements Decider {
 	}
 
 	private static Predicate<Pair<Double, InputRow>> languageIs(String language) {
-
-		return new Predicate<Pair<Double, InputRow>>() {
-			@Override
-			public boolean test(Pair<Double, InputRow> i) {
-				return i.two.outputValue.equals(language);
-			}
-		};
+		return i -> i.two.outputValue.equals(language);
 	}
 
 	/**
@@ -58,10 +49,9 @@ public class DecisionTree implements Decider {
 		if (levelLeft == 0) {
 			// return the majority by total weight
 			double weightOne = allData.stream().filter(languageIs(languageOne)).mapToDouble(i -> i.one).sum();
-			if (weightOne > 0.5 * allData.totalWeight()) {
-				return AbsoluteDecider.fromLanguage(languageOne);
-			}
-			return AbsoluteDecider.fromLanguage(languageTwo);
+			double totalWeight = allData.totalWeight();
+
+			return new ConfidenceDecider(languageOne, languageTwo, weightOne / totalWeight);
 		}
 
 		// base case 2: there is all of one type
@@ -79,7 +69,7 @@ public class DecisionTree implements Decider {
 		// result should be present -- if not we still have depth left but have exhausted options
 		if (result.isEmpty()) {
 			// ran out of options, just return the majority
-			return learn(allData, 0, new HashSet<>(), totalSize, languageOne, languageTwo);
+			return learn(allData, 0, Collections.emptySet(), totalSize, languageOne, languageTwo);
 		}
 		Attributes best = result.get().one;
 
@@ -141,7 +131,7 @@ public class DecisionTree implements Decider {
 
 	/** Instance method to make the decision on input. */
 	@Override
-	public String decide(InputRow row) {
+	public LanguageDecision decide(InputRow row) {
 		// recursive, test the inputs on the left and right side
 		return splitOn.has(row) ? right.decide(row) : left.decide(row);
 	}
