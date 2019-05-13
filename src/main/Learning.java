@@ -5,7 +5,9 @@ import helper.Pair;
 import learners.Decider;
 import learners.MultiClassifier;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public class Learning {
 	// arguments to the parameters
 
 	// tasks
-	private static boolean isDownloadingExamples, isLearning, isTesting = false;
+	private static boolean isDownloadingExamples, isLearning, isTesting, isEvaluating = false;
 
 	// examples
 	private static int numberExamples = 200;
@@ -44,6 +46,7 @@ public class Learning {
 			if (i.equals("examples")) isDownloadingExamples = true;
 			if (i.equals("learn")) isLearning = true;
 			if (i.equals("test")) isTesting = true;
+			if (i.equals("evaluate")) isEvaluating = true;
 			if (i.equalsIgnoreCase("decisionTree")) method = "decisionTree";
 			if (i.equalsIgnoreCase("adaboost")) method = "adaboost";
 
@@ -71,7 +74,7 @@ public class Learning {
 			if (i.equals("printBinaryAccuracy")) printBinaryAccuracy = true;
 		}
 
-		if (!isDownloadingExamples && !isLearning && !isTesting) {
+		if (!isDownloadingExamples && !isLearning && !isTesting && !isEvaluating) {
 			usage();
 		}
 	}
@@ -190,7 +193,7 @@ public class Learning {
 			m.saveTo(learnerFile);
 		}
 
-		// evaluate a learner
+		// test a learner
 		if (isTesting) {
 			// requires testing data (labeled)
 			// requires learner file
@@ -202,6 +205,24 @@ public class Learning {
 			System.out.println("Testing accuracy: " + result);
 		}
 
+		// evaluate a learner (given new inputs, print out the evaluation)
+		if (isEvaluating) {
+			// requires learner file
+			if (learnerFile == null) usage();
+
+			System.out.printf("Using learner:%s%n", learnerFile);
+			System.out.println("Enter a phrase, followed by a new line.");
+
+			Decider learner = Decider.loadFromFile(learnerFile);
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			String line;
+			while ((line = br.readLine()) != null) {
+				InputRow row = new InputRow(line);
+				System.out.println(learner.decide(row));
+			}
+		}
+
 		System.out.println("\nRunning time (s) " + (System.currentTimeMillis() - startTime) / 1_000.0);
 	}
 
@@ -210,7 +231,8 @@ public class Learning {
 			"\texamples examplesFile=  testingFile=  (numberExamples=200)\n" +
 			"\tlearn (decisionTree | adaboost) examplesFile=   (numberGenerations=50)  (poolSize=12)  (treeDepth=6)  " +
 			"learnerFile=  (printBinaryAccuracy)\n" +
-			"\ttest testingFile=  learnerFile=");
+			"\ttest testingFile=  learnerFile=\n" +
+			"\tevaluate learnerFile=");
 		System.exit(0);
 	}
 

@@ -62,7 +62,6 @@ Given a phrase in one of the languages below, the program can detect and correct
 
 ## Tasks left to implement
 
-  - Boosting on the decision trees, and threshold/weighted testing
   - Neural network learning
     - using linear combinations at each node (result = a + bx + cy + dz + ..., where a-... are learned weights)
     - customize the amount of hidden layers (0+) and the number of nodes per hidden layer
@@ -93,7 +92,7 @@ The above graph shows the Adaptive Boosting accuracy vs ensemble size.
 Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
 with varying ensemble size (1-15).
 
-The above shows that the testing accuracy peaks at 97.2%.
+The above shows that the testing accuracy peaks at 97.2%, with 10 decision stumps in the ensemble.
 
 Each iteration of training took around 14 seconds, with the time only slightly increasing
 with larger ensemble sizes. The attribute learning took much of the time.
