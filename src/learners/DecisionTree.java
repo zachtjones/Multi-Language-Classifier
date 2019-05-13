@@ -113,7 +113,7 @@ public class DecisionTree implements Decider {
 	}
 
 	/** Returns the entropy for a weighted boolean random variable. */
-	private static double entropyForBoolean(double trueChance) {
+	static double entropyForBoolean(double trueChance) {
 		// 0 or 1 will result in NaN, but it should be 0.
 		if (trueChance == 0.0 || trueChance == 1.0) {
 			return 0;

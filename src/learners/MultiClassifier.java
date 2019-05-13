@@ -3,6 +3,7 @@ package learners;
 import helper.Pair;
 import helper.WeightedList;
 import attributes.Attributes;
+import helper.MultiLanguageDecision;
 import main.InputRow;
 import main.Learning;
 
@@ -97,16 +98,22 @@ public class MultiClassifier implements Serializable, Decider {
 	}
 
 	@Override
-	public String decide(InputRow row) {
-		// base on the most number of +1's
-		Map<String, Long> counts = deciders.stream()
-			.map(i -> i.decide(row)) // stream of decisions
-			.collect(Collectors.groupingBy(i -> i, Collectors.counting())); // map< language, count
+	public LanguageDecision decide(InputRow row) {
+		// return a language decision based on the combined confidence of each decider
+		MultiLanguageDecision decision = new MultiLanguageDecision();
 
-		// find most common one
-		return counts.entrySet().stream()
-			.max(Comparator.comparingLong(Map.Entry::getValue)) // extract max pair
-			.map(Map.Entry::getKey).orElse(null);
+		// add on the confidences -- when it's near 50/50 for the binary decider, count less
+		for (Decider i : deciders) {
+			// base on the entropy of the boolean random variable for the most common
+			LanguageDecision d = i.decide(row);
+			double confidence = d.confidenceForLanguage(d.mostConfidentLanguage());
+			double relativeWeight = 1 - DecisionTree.entropyForBoolean(confidence);
+			decision.addWeightTo(i.decide(row), relativeWeight);
+		}
+
+		decision.normalize();
+
+		return decision;
 	}
 
 	@Override
