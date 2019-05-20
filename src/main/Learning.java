@@ -189,7 +189,7 @@ public class Learning {
 
 			} else {
 
-				System.out.printf("Learning using Neural Networks, hiddenLayers=%d, nodesPerLayer=%d",
+				System.out.printf("Learning using Neural Networks, hiddenLayers=%d, nodesPerLayer=%d%n",
 					hiddenLayers, nodesPerLayer);
 
 				// learn
