@@ -17,13 +17,20 @@ public class NeuralNetwork implements Decider {
 	private final int hiddenLayers;
 	private final int nodesPerLayer;
 	private final List<Attributes> attributes;
-	private final String languageOne;
-	private final String languageTwo;
 	private final int numberAttributes;
 
-	/** Nodes in this network [layer number][numberInLayer] */
+	/** The first language, this get mapped to 1.0 */
+	private final String languageOne;
+	/** The second language, this get mapped to -1.0 */
+	private final String languageTwo;
+
+
+	/** Nodes in this network [layer number][numberInLayer]
+	 * layerNumber = 0 ones that depend on input, */
 	private final Perceptron[][] nodes;
 	private final Perceptron finalPerceptron; // the one in the output layer
+
+	private final static double learningRate = 0.05;
 
 
 	public NeuralNetwork(List<InputRow> rows, int hiddenLayers, int nodesPerLayer,
@@ -37,14 +44,18 @@ public class NeuralNetwork implements Decider {
 		this.languageOne = languageOne;
 		this.languageTwo = languageTwo;
 
-		nodes = new Perceptron[hiddenLayers + 1][nodesPerLayer];
+		nodes = new Perceptron[hiddenLayers][nodesPerLayer];
 
 		// all nodes[0] take in the converted inputs
-		for (int k = 0; k < nodesPerLayer; k++) {
-			nodes[0][k] = new Perceptron(numberAttributes);
+		// first (hidden) layer takes the number of attributes inputs
+		if (hiddenLayers > 0) {
+			for (int k = 0; k < nodesPerLayer; k++) {
+				nodes[0][k] = new Perceptron(numberAttributes);
+			}
 		}
+
 		// the rest have the number of inputs as the nodesPerLayer
-		for (int i = 0; i < hiddenLayers; i++) {
+		for (int i = 0; i < hiddenLayers - 1; i++) {
 			for (int j = 0; j < nodesPerLayer; j++) {
 				nodes[i + 1][j] = new Perceptron(nodesPerLayer);
 			}
@@ -58,7 +69,31 @@ public class NeuralNetwork implements Decider {
 		}
 
 		// TODO do a loop to continue adjusting weights until they converge
-		// languageOne -> 1, languageTwo -> -1
+		// they don't always converge
+		for (int k = 0; k < 30; k++) {
+			// update the final perceptron if incorrect
+			double totalUpdates = 0.0;
+			for (InputRow row : rows) {
+				String decision = this.decide(row).mostConfidentLanguage();
+				if (!decision.equals(row.outputValue)) {
+					// update the perceptron, don't update the intercept
+					for (int i = 1; i < finalPerceptron.weights.length; i++) {
+						// determine the input to finalPerceptron
+						double input = this.attributes.get(i).has(row) ? 1.0 : -1.0;
+						double expectedOutput = row.outputValue.equals(languageOne) ? 1.0 : -1.0;
+						double update = learningRate * input * expectedOutput;
+						totalUpdates += Math.abs(update);
+						finalPerceptron.weights[i] += update;
+					}
+				}
+			}
+			// there's not any changes from the previous iteration, stop.
+			if (totalUpdates == 0) {
+				break;
+			}
+		}
+		System.out.println();
+
 	}
 
 	@Override
@@ -95,7 +130,15 @@ public class NeuralNetwork implements Decider {
 
 	@Override
 	public String representation(int numSpaces) {
-		StringBuilder result = new StringBuilder("A neural network composed of nodes:\n\n");
+		StringBuilder result = new StringBuilder("A neural network: ");
+		result.append(languageOne);
+		result.append("(value 1) vs ");
+		result.append(languageTwo);
+		result.append("(value -1)\n");
+
+		result.append("  Attributes order: ");
+		result.append(attributes.toString());
+		result.append('\n');
 
 		for (int i = 0; i < nodes.length; i++) {
 			result.append("Layer: ");
@@ -105,11 +148,17 @@ public class NeuralNetwork implements Decider {
 			for (int j = 0; j < nodes[i].length; j++) {
 				result.append("  Node: ");
 				result.append(j);
+				result.append(" bias: ");
+				result.append(nodes[i][j].bias);
 				result.append(" has weights: ");
 				result.append(Arrays.toString(nodes[i][j].weights));
 				result.append('\n');
 			}
 		}
+
+		result.append("Output node has weights: ");
+		result.append(Arrays.toString(finalPerceptron.weights));
+		result.append('\n');
 
 		return result.toString();
 	}

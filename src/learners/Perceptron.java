@@ -10,9 +10,10 @@ import java.util.Random;
  *  result = a + bx + cy + dz + ...,
  * 	where a-d are weights, x-z are input values
  */
-public class Perceptron implements Serializable {
+class Perceptron implements Serializable {
 
 	final double[] weights;
+	final double bias; // the intercept term, never gets adjusted
 
 
 	/**
@@ -24,12 +25,13 @@ public class Perceptron implements Serializable {
 	Perceptron(int numberInputs) {
 		Random r = new Random();
 
-		weights = new double[numberInputs + 1];
+		weights = new double[numberInputs];
 
 		// initialize to random weights in [-1, 1]
 		for (int i = 0; i < weights.length; i++) {
 			weights[i] = r.nextDouble() * 2 - 1.0; // transform [0, 1] -> [-1, 1]
 		}
+		bias = r.nextDouble() * 2 - 1.0;
 	}
 
 	/**
@@ -41,11 +43,11 @@ public class Perceptron implements Serializable {
 	 */
 	double calculateResult(double[] inputValues) {
 		// learn combination
-		double result = weights[0]; // intercept = a
+		double result = bias; // intercept = a
 
 		for (int i = 0; i < inputValues.length; i++) {
 			// bx + cy + dz + ...
-			result += inputValues[i] * weights[i + 1];
+			result += inputValues[i] * weights[i];
 		}
 
 		// max of the sum of absolute values of the weights
