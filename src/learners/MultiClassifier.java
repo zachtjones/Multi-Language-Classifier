@@ -129,6 +129,7 @@ public class MultiClassifier implements Serializable, Decider {
 			// base on the entropy of the boolean random variable for the most common
 			LanguageDecision d = i.decide(row);
 			double confidence = d.confidenceForLanguage(d.mostConfidentLanguage());
+			if (confidence > 1.0) confidence = 1.0;
 			double relativeWeight = 1 - DecisionTree.entropyForBoolean(confidence);
 			decision.addWeightTo(i.decide(row), relativeWeight);
 		}

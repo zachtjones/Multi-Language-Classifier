@@ -1,11 +1,12 @@
 package attributes;
 
+import learners.NetNode;
 import main.InputRow;
 
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class Attributes implements Serializable, Comparable<Attributes> {
+public abstract class Attributes implements Serializable, Comparable<Attributes>, NetNode {
 
 	@Override
 	public int compareTo(Attributes other) {
@@ -81,4 +82,10 @@ public abstract class Attributes implements Serializable, Comparable<Attributes>
 	 * @return The new attribute, which is a mutation of this.
 	 */
 	public abstract Attributes mutate(List<String> words, List<InputRow> inputs, String languageOne, String languageTwo);
+
+	/** Method to help with the neural network, attributes can be treated as Nodes in the network. */
+	@Override
+	public double activation(InputRow row) {
+		return has(row) ? 1.0 : -1.0;
+	}
 }

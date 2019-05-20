@@ -4,7 +4,6 @@ import attributes.Attributes;
 import main.InputRow;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -25,16 +24,32 @@ public class NeuralNetwork implements Decider {
 	private final String languageTwo;
 
 
-	/** Nodes in this network [layer number][numberInLayer]
-	 * layerNumber = 0 ones that depend on input, */
-	private final Perceptron[][] nodes;
-	private final Perceptron finalPerceptron; // the one in the output layer
+	/** Output node, holds a parent reference to all the nodes it needs */
+	private final Perceptron output; // the one in the output layer
 
-	private final static double learningRate = 0.05;
+	private final static double learningRate = 0.005;
 
 
 	public NeuralNetwork(List<InputRow> rows, int hiddenLayers, int nodesPerLayer,
 										Set<Attributes> attributes, String languageOne, String languageTwo) {
+
+		// build up the graph
+		List<NetNode> currentParents = new ArrayList<>(attributes);
+		List<NetNode> nextIteration;
+
+		for (int i = 0; i < hiddenLayers; i++) {
+			nextIteration = new ArrayList<>(nodesPerLayer);
+			for (int j = 0; j < nodesPerLayer; j++) {
+				nextIteration.add(new Perceptron(currentParents, languageOne, learningRate));
+			}
+			// prepare for next iteration
+			currentParents = nextIteration;
+		}
+
+		// final perceptron
+		output = new Perceptron(currentParents, languageOne, learningRate);
+
+
 		this.rows = rows;
 		this.hiddenLayers = hiddenLayers;
 		this.nodesPerLayer = nodesPerLayer;
@@ -43,30 +58,6 @@ public class NeuralNetwork implements Decider {
 
 		this.languageOne = languageOne;
 		this.languageTwo = languageTwo;
-
-		nodes = new Perceptron[hiddenLayers][nodesPerLayer];
-
-		// all nodes[0] take in the converted inputs
-		// first (hidden) layer takes the number of attributes inputs
-		if (hiddenLayers > 0) {
-			for (int k = 0; k < nodesPerLayer; k++) {
-				nodes[0][k] = new Perceptron(numberAttributes);
-			}
-		}
-
-		// the rest have the number of inputs as the nodesPerLayer
-		for (int i = 0; i < hiddenLayers - 1; i++) {
-			for (int j = 0; j < nodesPerLayer; j++) {
-				nodes[i + 1][j] = new Perceptron(nodesPerLayer);
-			}
-		}
-
-		// our final perceptron, combining the results of the previous layer
-		if (hiddenLayers > 0) {
-			finalPerceptron = new Perceptron(nodesPerLayer);
-		} else {
-			finalPerceptron = new Perceptron(numberAttributes);
-		}
 
 		// TODO do a loop to continue adjusting weights until they converge
 		// they don't always converge
@@ -86,16 +77,15 @@ public class NeuralNetwork implements Decider {
 		for (InputRow row : rows) {
 			String decision = this.decide(row).mostConfidentLanguage();
 			if (!decision.equals(row.outputValue)) {
-				totalUpdates = updateWeightsForInput(totalUpdates, row);
+				totalUpdates += updateWeightsForInput(row);
 			}
 		}
-
 		return totalUpdates;
 	}
 
 	/** Updates the weights for a specific example.
 	 * This is only called for examples that are classified incorrectly */
-	private double updateWeightsForInput(double totalUpdates, InputRow row) {
+	private double updateWeightsForInput(InputRow row) {
 
 		// it's already determined that this classification is incorrect, relay the error back
 		//  throughout the network
@@ -105,7 +95,7 @@ public class NeuralNetwork implements Decider {
 
 		// first step: calculate all the activations:
 		// need a working array of doubles for the calculations through, initially the inputs
-		double[][] activations = new double[hiddenLayers][];
+		/*double[][] activations = new double[hiddenLayers][];
 		double[] inputActivations = calculateInputValues(row);
 
 		// working values
@@ -190,65 +180,17 @@ public class NeuralNetwork implements Decider {
 			for (int j = 0; j < nodesPerLayer; j++) {
 				// for k up to nodesPerLayer
 				// node[i][j] weight to node[i + 1][k] is incremented by that activation * delta
-				
+
 			}
-		}
+		}*/
 
-		// update the perceptron, don't update the intercept
-		for (int i = 1; i < finalPerceptron.weights.length; i++) {
-			// determine the input to finalPerceptron
-			double input = this.attributes.get(i).has(row) ? 1.0 : -1.0;
-			double expectedOutput = mapOutputToDouble(row.outputValue);
-			double update = learningRate * input * expectedOutput;
-			totalUpdates += Math.abs(update);
-			finalPerceptron.weights[i] += update;
-		}
-		return totalUpdates;
-	}
-
-	/***
-	 * Calculates the values for the inputs, based on the attributes.
-	 * True is mapped to 1, false is mapped to -1.
-	 * @param row The input to test the attributes on.
-	 * @return A double array representing the activations on the input nodes
-	 */
-	private double[] calculateInputValues(InputRow row) {
-		// true -> 1.0;
-		// false -> -1.0;
-		// calculate the values as they go through the network
-		double[] inputsConverted = new double[numberAttributes];
-		for (int k = 0; k < numberAttributes; k++) {
-			inputsConverted[k] = attributes.get(k).has(row) ? 1.0 : -1.0;
-		}
-		return inputsConverted;
-	}
-
-	/** Maps the language to either 1.0 (first language) or -1.0 (second language) */
-	private double mapOutputToDouble(String language) {
-		return language.equals(languageOne) ? 1.0 : -1.0;
+		return output.updateWeights(row);
 	}
 
 	@Override
 	public LanguageDecision decide(InputRow row) {
 
-		// need a working array of doubles for the calculations through, initially the inputs
-		double[] inputs = calculateInputValues(row);
-		double[] nextIteration;
-
-		// work through the network, working left to right, based on the calculations of previous layer
-		for (Perceptron[] currentLayer : nodes) {
-
-			nextIteration = new double[nodesPerLayer];
-
-			for (int j = 0; j < nodesPerLayer; j++) {
-				nextIteration[j] = currentLayer[j].calculateResult(inputs);
-			}
-
-			// outputs of this layer feed the inputs of the next one.
-			inputs = nextIteration;
-		}
-
-		double result = finalPerceptron.calculateResult(inputs); // range [-1.0, 1.0]
+		double result = output.activation(row); // range [-1.0, 1.0]
 		double probabilityLanguageOne = (result + 1) / 2; // range [0, 1.0]
 		return new ConfidenceDecider(languageOne, languageTwo, probabilityLanguageOne);
 	}
@@ -265,25 +207,7 @@ public class NeuralNetwork implements Decider {
 		result.append(attributes.toString());
 		result.append('\n');
 
-		for (int i = 0; i < nodes.length; i++) {
-			result.append("Layer: ");
-			result.append(i + 1);
-			result.append('\n');
-
-			for (int j = 0; j < nodes[i].length; j++) {
-				result.append("  Node: ");
-				result.append(j);
-				result.append(" bias: ");
-				result.append(nodes[i][j].bias);
-				result.append(" has weights: ");
-				result.append(Arrays.toString(nodes[i][j].weights));
-				result.append('\n');
-			}
-		}
-
-		result.append("Output node has weights: ");
-		result.append(Arrays.toString(finalPerceptron.weights));
-		result.append('\n');
+		// TODO have this print out all the weights
 
 		return result.toString();
 	}

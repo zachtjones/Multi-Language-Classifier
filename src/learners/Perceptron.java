@@ -1,7 +1,10 @@
 package learners;
 
+import helper.WeightedList;
+import main.InputRow;
+
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /***
@@ -10,49 +13,63 @@ import java.util.Random;
  *  result = a + bx + cy + dz + ...,
  * 	where a-d are weights, x-z are input values
  */
-class Perceptron implements Serializable {
+class Perceptron implements NetNode, Serializable {
 
-	final double[] weights;
-	final double bias; // the intercept term, never gets adjusted
-
+	private final double bias; // the intercept term, never gets adjusted
+	private final WeightedList<NetNode> weights; // previous ones
+	private final String languageOne;
+	private final double learningRate;
 
 	/**
-	 * Creates a perceptron, given the number of inputs to this node.
+	 * Creates a perceptron, given the inputs to this node.
 	 * The weights are initialized to random values.
-	 * @param numberInputs The number of inputs to this node from either other nodes
-	 *                     or inputs to the network.
 	 */
-	Perceptron(int numberInputs) {
+	Perceptron(List<NetNode> parents, String languageOne, double learningRate) {
 		Random r = new Random();
 
-		weights = new double[numberInputs];
+		this.languageOne = languageOne;
+		this.learningRate = learningRate;
+		weights = new WeightedList<>(parents);
 
 		// initialize to random weights in [-1, 1]
-		for (int i = 0; i < weights.length; i++) {
-			weights[i] = r.nextDouble() * 2 - 1.0; // transform [0, 1] -> [-1, 1]
+		for (int i = 0; i < weights.size(); i++) {
+			weights.setWeight(i, r.nextDouble() * 2 - 1.0); // transform [0, 1] -> [-1, 1]
 		}
-		bias = r.nextDouble() * 2 - 1.0;
+		//bias = r.nextDouble() * 2 - 1.0;
+		bias = 0.0;
+	}
+
+	@Override
+	public double activation(InputRow row) {
+		// the linear combination of the parents
+		double result = bias; // intercept
+		for (int i = 0; i < weights.size(); i++) {
+			result += weights.getItem(i).activation(row) * weights.getWeight(i);
+		}
+
+		// max is the sum of the absolute values of the weights
+		double max = weights.stream().mapToDouble(i -> Math.abs(i.one)).sum();
+
+		return result / max;
 	}
 
 	/**
-	 * Calculates the result from the input values, based on what was learned.
-	 * @param inputValues The array of input values to this node in the network, must
-	 *                    be the same size as the initial numberInputs used in the constructor.
-	 * @return A double representing the result of the linear combination of weights,
-	 *         this result will be in the range [-1, 1].
+	 * Updates the weights to this node.
+	 * @param row The input that was classified incorrectly.
+	 * @return The sum of absolute values of the weight changed.
 	 */
-	double calculateResult(double[] inputValues) {
-		// learn combination
-		double result = bias; // intercept = a
-
-		for (int i = 0; i < inputValues.length; i++) {
-			// bx + cy + dz + ...
-			result += inputValues[i] * weights[i];
+	double updateWeights(InputRow row) {
+		double totalUpdates = 0.0;
+		// update the perceptron, don't update the intercept
+		for (int i = 0; i < weights.size(); i++) {
+			// determine the input to finalPerceptron
+			double input = this.weights.getItem(i).activation(row);
+			double expectedOutput = row.outputValue.equals(languageOne) ? 1.0 : -1.0;
+			double update = learningRate * input * expectedOutput;
+			totalUpdates += Math.abs(update);
+			// add on the new weight
+			this.weights.setWeight(i, weights.getWeight(i) + update);
 		}
-
-		// max of the sum of absolute values of the weights
-		double max = Arrays.stream(weights).map(Math::abs).sum();
-
-		return result / max;
+		return totalUpdates;
 	}
 }
