@@ -34,21 +34,21 @@ What to learn:
   - figure out which language a phrase is, learning from examples from wikipedia's random page links.
   
 The languages I'm going to try to classify:
-  - Albanian: https://sq.wikipedia.org/wiki/Speciale:Rast%C3%ABsishme
-  - Croatian: https://hr.wikipedia.org/wiki/Posebno:Slu%C4%8Dajna_stranica
-  - Czech: https://cs.wikipedia.org/wiki/Speci%C3%A1ln%C3%AD:N%C3%A1hodn%C3%A1_str%C3%A1nka
-  - Danish: https://da.wikipedia.org/wiki/Speciel:Tilf%C3%A6ldig_side
-  - Dutch: https://nl.wikipedia.org/wiki/Speciaal:Willekeurig
-  - English: https://en.wikipedia.org/wiki/Special:Random
-  - French: https://fr.wikipedia.org/wiki/Sp%C3%A9cial:Page_au_hasard
-  - Gaelic (Scottish): https://gd.wikipedia.org/wiki/S%C3%B2nraichte:Random
-  - German: https://de.wikipedia.org/wiki/Spezial:Zuf%C3%A4llige_Seite
-  - Hawaiian: https://haw.wikipedia.org/wiki/Papa_nui:Kaulele
-  - Icelandic: https://is.wikipedia.org/wiki/Kerfiss%C3%AD%C3%B0a:Handah%C3%B3fsvalin_s%C3%AD%C3%B0a
-  - Italian: https://it.wikipedia.org/wiki/Speciale:PaginaCasuale
-  - Romanian: https://ro.wikipedia.org/wiki/Special:Aleatoriu
-  - Samoan: https://sm.wikipedia.org/wiki/Special:Random
-  - Spanish: https://es.wikipedia.org/wiki/Especial:Aleatoria
+  - Albanian
+  - Croatian
+  - Czech
+  - Danish
+  - Dutch
+  - English
+  - French
+  - Gaelic (Scottish)
+  - German
+  - Hawaiian
+  - Icelandic
+  - Italian
+  - Romanian
+  - Samoan
+  - Spanish
   
 These languages are strategically chosen:
   - They all have latin characters

@@ -34,11 +34,11 @@ public class MultiClassifier implements Serializable, Decider {
 	public static MultiClassifier learnDecisionTree(List<InputRow> rows, int depth,
 													int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
 
-		return learn(rows, true, depth, numberGenerations, poolSize, printBinaryAccuracy);
+		return learn(rows, "decision", numberGenerations, poolSize, printBinaryAccuracy, depth);
 	}
 
 	/**
-	 * Learns an Adaptive Boosting ensemble, composed of trees, eacb of depth 1.
+	 * Learns an Adaptive Boosting ensemble, composed of trees, each of depth 1.
 	 * First figures out the attributes for each pair of languages, and then learns a decision tree on each.
 	 * @param rows The List of labeled input.
 	 * @param ensembleSize The number of decision stumps in the ensemble.
@@ -50,11 +50,29 @@ public class MultiClassifier implements Serializable, Decider {
 	public static MultiClassifier learnAdaBoost(List<InputRow> rows, int ensembleSize,
 												int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
 
-		return learn(rows, false, ensembleSize, numberGenerations, poolSize, printBinaryAccuracy);
+		return learn(rows, "ada", numberGenerations, poolSize, printBinaryAccuracy, ensembleSize);
 	}
 
-	private static MultiClassifier learn(List<InputRow> rows, boolean isDecisionTree, int param,
-										 int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
+
+	/**
+	 * Learns a Neural Network, composed of perceptrons
+	 * @param rows The list of labeled input
+	 * @param hiddenLayers The number of hidden layers, 0 or more.
+	 * @param nodesPerLayer The number of nodes per layer, 1 or more.
+	 * @param numberGenerations The number of generations on the genetic algorithm for attributes
+	 * @param poolSize The number of attributes to keep in the pool
+	 * @param printBinaryAccuracy Whether to print out the accuracy of the binary deciders or not
+	 * @return A multi-classifier based on the neural network for each language pair.
+	 */
+	public static MultiClassifier learnNeuralNetwork(List<InputRow> rows, int hiddenLayers, int nodesPerLayer,
+													 int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
+
+		return learn(rows, "neural", numberGenerations, poolSize, printBinaryAccuracy, hiddenLayers, nodesPerLayer);
+	}
+
+	private static MultiClassifier learn(List<InputRow> rows, String method, int numberGenerations,
+										 int poolSize, boolean printBinaryAccuracy, int... param) {
+
 		List<Pair<String, String>> languagePairs = Learning.languagePairs;
 
 		// each sub-problem: learning to distinguish a pair of languages
@@ -72,13 +90,17 @@ public class MultiClassifier implements Serializable, Decider {
 
 			// learn a decision tree based on the attributes, with depth
 			final Decider binaryDecider;
-			if (isDecisionTree) {
+			if (method.equals("decision")) {
 				binaryDecider = DecisionTree.learn(
-					new WeightedList<>(twoLanguages), param, attributes, twoLanguages.size(), first, second
+					new WeightedList<>(twoLanguages), param[0], attributes, twoLanguages.size(), first, second
+				);
+			} else if (method.equals("ada")) {
+				binaryDecider = Adaboost.learn(
+					new WeightedList<>(twoLanguages), param[0], attributes, first, second
 				);
 			} else {
-				binaryDecider = Adaboost.learn(
-					new WeightedList<>(twoLanguages), param, attributes, first, second
+				binaryDecider = NeuralNetwork.learn(
+					twoLanguages, param[0], param[1], attributes, first, second
 				);
 			}
 
