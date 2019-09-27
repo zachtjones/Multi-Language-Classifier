@@ -67,7 +67,7 @@ public class DecisionTree implements Decider {
 			.min(Comparator.comparingDouble( pair -> pair.two));
 
 		// result should be present -- if not we still have depth left but have exhausted options
-		if (result.isEmpty()) {
+		if (!result.isPresent()) {
 			// ran out of options, just return the majority
 			return learn(allData, 0, Collections.emptySet(), totalSize, languageOne, languageTwo);
 		}

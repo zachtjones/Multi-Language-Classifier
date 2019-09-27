@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,7 +74,7 @@ public class GetWikipediaContent {
 
                 if (hasNonLatinCharacters) continue; // skip ones with non latin characters
 
-                if (!i.isBlank()) {
+                if (!i.trim().equals("")) {
                     // don't add names
                     String lower = i.toLowerCase();
                     if (lower.equals(i)) {
@@ -91,15 +92,13 @@ public class GetWikipediaContent {
 
     /** Downloads the file into the string. */
     private static String downloadFile(URL url) throws IOException {
-        // This user agent is for if the server wants real humans to visit
-        // This socket type will allow to set user_agent
-        URLConnection con = url.openConnection();
-
-        // Requesting input data from server
-        InputStream inputStream = con.getInputStream();
-        byte[] content = inputStream.readAllBytes();
-        inputStream.close();
-        return new String(content);
+        Scanner sc = new Scanner(url.openStream());
+        StringBuilder results = new StringBuilder();
+        while (sc.hasNextLine()) {
+            results.append(sc.nextLine());
+            results.append('\n');
+        }
+        return results.toString();
     }
 
     /** loads the random articles from Wikipedia, saving to the output file */
