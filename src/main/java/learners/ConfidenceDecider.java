@@ -11,6 +11,12 @@ public class ConfidenceDecider extends LanguageDecision implements Decider {
     private final String languageOne, languageTwo;
     private final double fractionOne;
 
+    /**
+     * Creates a LanguageDecision based on the confidence between the two langauges.
+     * @param languageOne The first language
+     * @param languageTwo The second language
+     * @param fractionOne The fraction that is the first language (in range [0.0, 1.0])
+     */
     public ConfidenceDecider(String languageOne, String languageTwo, double fractionOne) {
         this.languageOne = languageOne;
         this.languageTwo = languageTwo;

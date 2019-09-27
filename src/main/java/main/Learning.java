@@ -29,12 +29,14 @@ public class Learning {
 	private static String testingFile;
 
 	// learning
-	private static String method = "decisionTree"; // decisionTree or AdaBoost
+	private static String method = "decisionTree"; // decisionTree, AdaBoost, or neural
 	private static String learnerFile;
 	private static int numberGenerations = 50;
 	private static int poolSize = 12;
 	private static int treeDepth = 6;
 	private static int ensembleSize = 6; // learners in the AdaBoost ensemble
+	private static int hiddenLayers = 1; // neural network hidden layer count
+	private static int nodesPerLayer = 10; // number of nodes per neural network layer
 
 	// extra printing
 	private static boolean printBinaryAccuracy = false;
@@ -49,6 +51,7 @@ public class Learning {
 			if (i.equals("evaluate")) isEvaluating = true;
 			if (i.equalsIgnoreCase("decisionTree")) method = "decisionTree";
 			if (i.equalsIgnoreCase("adaboost")) method = "adaboost";
+			if (i.equalsIgnoreCase("neural")) method = "neural";
 
 			// files
 			if (i.startsWith("examplesFile="))
@@ -69,6 +72,10 @@ public class Learning {
 				treeDepth = Integer.parseInt(i.replace("treeDepth=", ""));
 			if (i.startsWith("ensembleSize"))
 				ensembleSize = Integer.parseInt(i.replace("ensembleSize=", ""));
+			if (i.startsWith("hiddenLayers="))
+				hiddenLayers = Integer.parseInt(i.replace("hiddenLayers=", ""));
+			if (i.startsWith("nodesPerLayer="))
+				nodesPerLayer = Integer.parseInt(i.replace("nodesPerLayer=", ""));
 
 			// printing stuff
 			if (i.equals("printBinaryAccuracy")) printBinaryAccuracy = true;
@@ -169,7 +176,7 @@ public class Learning {
 					rows, treeDepth, numberGenerations, poolSize, printBinaryAccuracy
 				);
 
-			} else { // adaboost learning algorithm, tree depth 1
+			} else if (method.equals("adaboost")) { // adaboost learning algorithm, tree depth 1
 
 				System.out.printf(
 					"Learning AdaBoost on decision tree stumps, ensembleSize=%d, treeDepth=1, learnerFile=%s%n",
@@ -180,6 +187,15 @@ public class Learning {
 					rows, ensembleSize, numberGenerations, poolSize, printBinaryAccuracy
 				);
 
+			} else {
+
+				System.out.printf("Learning using Neural Networks, hiddenLayers=%d, nodesPerLayer=%d%n",
+					hiddenLayers, nodesPerLayer);
+
+				// learn
+				m = MultiClassifier.learnNeuralNetwork(
+					rows, hiddenLayers, nodesPerLayer, numberGenerations, poolSize, printBinaryAccuracy
+				);
 			}
 
 			//System.out.println(m.representation(0));
@@ -229,7 +245,8 @@ public class Learning {
 	private static void usage() {
 		System.out.println("Usage: (argument position doesn't matter), optionals are in parentheses\n" +
 			"\texamples examplesFile=  testingFile=  (numberExamples=200)\n" +
-			"\tlearn (decisionTree | adaboost) examplesFile=   (numberGenerations=50)  (poolSize=12)  (treeDepth=6)  " +
+			"\tlearn (decisionTree | adaboost | neural) examplesFile=   (numberGenerations=50)  (poolSize=12) " +
+			" (treeDepth=6)  (ensembleSize=6)  (hiddenLayers=1)  (nodesPerLayer=10) " +
 			"learnerFile=  (printBinaryAccuracy)\n" +
 			"\ttest testingFile=  learnerFile=\n" +
 			"\tevaluate learnerFile=");
