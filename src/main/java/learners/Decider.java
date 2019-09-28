@@ -42,4 +42,14 @@ public interface Decider extends Serializable {
 		file.close();
 		return result;
 	}
+
+	/** Loads a decider from the resources file name. */
+	static Decider loadFromResources(String resourcesFileName) throws IOException, ClassNotFoundException {
+		InputStream file = Decider.class.getClassLoader().getResourceAsStream(resourcesFileName);
+		ObjectInputStream in = new ObjectInputStream(file);
+		Decider result = (Decider) in.readObject();
+		in.close();
+		file.close();
+		return result;
+	}
 }

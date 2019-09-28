@@ -99,9 +99,10 @@ public class MultiClassifier implements Serializable, Decider {
 					new WeightedList<>(twoLanguages), param[0], attributes, first, second
 				);
 			} else {
-				binaryDecider = new NeuralNetwork(
-					twoLanguages, param[0], param[1], attributes, first, second
-				);
+//				binaryDecider = new NeuralNetwork(
+//					twoLanguages, param[0], param[1], attributes, first, second
+//				);
+				throw new IllegalArgumentException("Method must be 'ada' or 'decision'.");
 			}
 
 			// determine accuracy

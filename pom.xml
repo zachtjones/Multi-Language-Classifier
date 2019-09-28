@@ -12,7 +12,7 @@
     </properties>
     <build>
         <defaultGoal>clean package spring-boot:run</defaultGoal>
-        <finalName>java-compiler</finalName>
+        <finalName>classifier</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -30,7 +30,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>main.Runner</mainClass>
+                            <mainClass>main.Learning</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
