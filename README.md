@@ -96,3 +96,13 @@ The above shows that the testing accuracy peaks at 97.2%, with 10 decision stump
 
 Each iteration of training took around 14 seconds, with the time only slightly increasing
 with larger ensemble sizes. The attribute learning took much of the time.
+
+## Building and running
+
+Install:
+* Gradle
+* Java 17+
+
+`gradle jar` to build the code into a jar suitable for upload to AWS lambda
+
+This project uses Spring Boot, Netflix DGS (for GraphQL).
