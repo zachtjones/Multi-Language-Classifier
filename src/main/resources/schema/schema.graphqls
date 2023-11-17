@@ -1,8 +1,37 @@
 type Query {
-    shows(titleFilter: String): [Show]
+    language(input: LanguageClassificationInput!): LanguageClassificationResult!
 }
 
-type Show {
-    title: String!
-    releaseYear: Int!
+type LanguageClassificationResult {
+    mostLikelyLanguage: Language!
+    probabilities: [LanguageProbability]!
+}
+
+type LanguageProbability {
+    language: Language!
+    percentageLikely: Float!
+}
+
+input LanguageClassificationInput {
+    phrase: String!
+    # other parameters, like maybe the model to use
+    # learner id perhaps?
+}
+
+enum Language {
+    Albanian
+    Croatia
+    Czech
+    Danish
+    Dutch
+    English
+    French
+    Gaelic
+    German
+    Hawaiian
+    Icelandic
+    Italian
+    Romanian
+    Samoan
+    Spanish
 }

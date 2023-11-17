@@ -134,7 +134,7 @@ public class Learning {
 		}
 	}
 
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
+	public static void main2(String[] args) throws IOException, ClassNotFoundException {
 
 		parseArguments(args);
 
