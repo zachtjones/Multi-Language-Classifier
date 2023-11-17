@@ -37,11 +37,6 @@ class TrainModelDataFetcher(
                 "Attribute pool size must be between 10 and 500"
             }
         }
-        val treeDepth = input.treeDepth.also {
-            require(it in 1..10) {
-                "Tree depth must be between 1 and 10"
-            }
-        }
 
         val modelId = UUID.randomUUID().toString()
         val learnerFile = "$DATA_PATH$MODEL_PREFIX$modelId$MODEL_SUFFIX"
@@ -52,6 +47,13 @@ class TrainModelDataFetcher(
                 require(input.ensembleSize == null) {
                     "ensembleSize should be null when modelType=DECISION_TREE"
                 }
+                val treeDepth = requireNotNull(input.treeDepth){
+                    "Tree depth required for DECISION_TREE"
+                }.also {
+                    require(it in 1..10) {
+                        "Tree depth must be between 1 and 10"
+                    }
+                }
                 MultiClassifier.learnDecisionTree(
                     trainingData,
                     treeDepth,
@@ -61,6 +63,9 @@ class TrainModelDataFetcher(
                 )
             }
             ModelType.ADAPTIVE_BOOSTING_TREE -> {
+                require(input.treeDepth == null) {
+                    "tree depth should be null when modelType=ADAPTIVE_BOOSTING_TREE, as this always uses depth=1"
+                }
                 val ensembleSize = requireNotNull(input.ensembleSize) {
                     "Ensemble size required for ADAPTIVE_BOOSTING_TREE"
                 }.also { require(it in 2..20) {
