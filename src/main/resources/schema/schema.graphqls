@@ -5,6 +5,48 @@ type Query {
 
 type Mutation {
     downloadTrainingData(input: DownloadTrainingDataInput!): DownloadedTrainingData!
+    trainModel(input: TrainModelInput!): TrainedModel!
+}
+
+type TrainedModel {
+    id: ID!
+    trainingAccuracyPercentage: Float!
+}
+
+input TrainModelInput {
+    trainingDataId: ID!
+
+    """
+    Number of generations for attribute evolution used in the model (1...100)
+    """
+    attributeGenerations: Int!
+    """
+    Number of attributes to retain for the next generation (10...500)
+    """
+    attributePoolSize: Int!
+
+    modelType: ModelType!
+
+    """
+    Number of levels to the tree (1...10) to use for learning
+    """
+    treeDepth: Int!
+
+    """
+    Required for adaptive boost strategy, the number of trees that are used.
+    """
+    ensembleSize: Int
+}
+
+enum ModelType {
+    """
+    Generates a decision tree to determine pairwise between languages
+    """
+    DECISION_TREE
+    """
+    Generates an ensemble of decisions trees to determine pairwise between languages
+    """
+    ADAPTIVE_BOOSTING_TREE
 }
 
 type DownloadedTrainingDataResult {

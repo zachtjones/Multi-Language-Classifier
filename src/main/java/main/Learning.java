@@ -136,7 +136,7 @@ public class Learning {
 	}
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-
+		// learn adaboost examplesFile=data/training-1.txt learner=data/learner-1.dat
 		parseArguments(args);
 
 		long startTime = System.currentTimeMillis();
