@@ -1,10 +1,32 @@
 type Query {
     language(input: LanguageClassificationInput!): LanguageClassificationResult!
+    downloadedTrainingDataSets: DownloadedTrainingDataResult!
+}
+
+type Mutation {
+    downloadTrainingData(input: DownloadTrainingDataInput!): DownloadedTrainingData!
+}
+
+type DownloadedTrainingDataResult {
+    trainingData: [DownloadedTrainingData!]!
+}
+
+type DownloadedTrainingData {
+    id: ID!
+    numberOfPhrasesInEachLanguage: Int!
+    phraseWordLength: Int!
+}
+
+input DownloadTrainingDataInput {
+    """
+    Number of phrases to download in each language; min 10 max 1000
+    """
+    numberOfPhrasesInEachLanguage: Int!
 }
 
 type LanguageClassificationResult {
     mostLikelyLanguage: Language!
-    probabilities: [LanguageProbability]!
+    probabilities: [LanguageProbability!]!
 }
 
 type LanguageProbability {
