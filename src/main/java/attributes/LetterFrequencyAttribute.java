@@ -1,6 +1,6 @@
 package attributes;
 
-import main.InputRow;
+import com.zachjones.languageclassifier.entities.InputRow;
 
 import java.util.List;
 import java.util.Random;
@@ -25,8 +25,8 @@ public class LetterFrequencyAttribute extends Attributes {
 		int moreCount = 0;
 		int lessCount = 0;
 
-		for (int i = 0; i < input.words.length; i++) {
-			String wordI = input.words[i];
+		for (int i = 0; i < input.getWords().size(); i++) {
+			String wordI = input.getWords().get(i);
 			for (int j = 0; j < wordI.length(); j++) {
 				char letter = wordI.charAt(j);
 				if (letter == more) moreCount++;

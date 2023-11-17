@@ -4,7 +4,7 @@ import helper.Pair;
 import helper.WeightedList;
 import attributes.Attributes;
 import helper.MultiLanguageDecision;
-import main.InputRow;
+import com.zachjones.languageclassifier.entities.InputRow;
 import main.Learning;
 
 import java.io.Serializable;
@@ -82,7 +82,7 @@ public class MultiClassifier implements Serializable, Decider {
 			String second = pair.two;
 
 			List<InputRow> twoLanguages = rows.stream()
-				.filter(i -> i.outputValue.equals(first) || i.outputValue.equals(second))
+				.filter(i -> i.getOutputValue().equals(first) || i.getOutputValue().equals(second))
 				.collect(Collectors.toList());
 
 			Set<Attributes> attributes =

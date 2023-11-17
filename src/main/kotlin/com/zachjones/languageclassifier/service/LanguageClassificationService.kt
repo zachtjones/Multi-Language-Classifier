@@ -5,7 +5,7 @@ import com.zachjones.languageclassifier.model.types.LanguageClassificationInput
 import com.zachjones.languageclassifier.model.types.LanguageClassificationResult
 import com.zachjones.languageclassifier.model.types.LanguageProbability
 import learners.Decider
-import main.InputRow
+import com.zachjones.languageclassifier.entities.InputRow
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -13,9 +13,11 @@ import org.springframework.stereotype.Component
 class LanguageClassificationService {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
-    private val decider = Decider.loadFromResources("learnerOut.dat")
 
     fun classify(input: LanguageClassificationInput): LanguageClassificationResult {
+        // TODO - train a new one
+        val decider = Decider.loadFromResources("learnerOut.dat")
+
         val decision = decider.decide(InputRow(input.phrase))
         logger.info("Analyzed the phrase submitted successfully")
 

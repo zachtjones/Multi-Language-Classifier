@@ -1,6 +1,7 @@
 package learners;
 
 import attributes.Attributes;
+import com.zachjones.languageclassifier.entities.InputRow;
 import helper.Pair;
 import helper.WeightedList;
 import main.*;
@@ -22,7 +23,7 @@ public class DecisionTree implements Decider {
 	}
 
 	private static Predicate<Pair<Double, InputRow>> languageIs(String language) {
-		return i -> i.two.outputValue.equals(language);
+		return i -> i.two.getOutputValue().equals(language);
 	}
 
 	/**
@@ -107,7 +108,7 @@ public class DecisionTree implements Decider {
 
 		double total = allData.totalWeight();
 		// arbitrary - defined first to be true (doesn't matter since symmetric distribution).
-		double eAmount = allData.valuesWith(i -> i.outputValue.equals(languageOne)).totalWeight();
+		double eAmount = allData.valuesWith(i -> i.getOutputValue().equals(languageOne)).totalWeight();
 
 		return entropyForBoolean(eAmount / total);
 	}

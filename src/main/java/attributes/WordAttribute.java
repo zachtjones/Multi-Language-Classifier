@@ -1,6 +1,6 @@
 package attributes;
 
-import main.InputRow;
+import com.zachjones.languageclassifier.entities.InputRow;
 
 import java.util.List;
 import java.util.Random;
@@ -26,8 +26,8 @@ public class WordAttribute extends Attributes {
 	@Override
 	public boolean has(InputRow input) {
 		// iterate through the words to see if one matches exactly
-		for (int i = 0; i < input.words.length; i++) {
-			if (input.words[i].equals(word)) return true;
+		for (int i = 0; i < input.getWords().size(); i++) {
+			if (input.getWords().get(i).equals(word)) return true;
 		}
 		return false;
 	}

@@ -1,5 +1,6 @@
 package main;
 
+import com.zachjones.languageclassifier.entities.InputRow;
 import examples.GetWikipediaContent;
 import helper.Pair;
 import learners.Decider;
@@ -134,7 +135,7 @@ public class Learning {
 		}
 	}
 
-	public static void main2(String[] args) throws IOException, ClassNotFoundException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException {
 
 		parseArguments(args);
 
@@ -162,7 +163,7 @@ public class Learning {
 				numberGenerations, poolSize, examplesFile);
 
 			// read the inputs
-			List<InputRow> rows = InputRow.loadExamples(examplesFile);
+			List<InputRow> rows = InputRow.Companion.loadExamples(examplesFile);
 			final MultiClassifier m;
 
 			if (method.equals("decisionTree")) {
@@ -217,7 +218,7 @@ public class Learning {
 			if (learnerFile == null) usage();
 
 			Decider learner = Decider.loadFromFile(learnerFile);
-			double result = 100 * (1 - learner.errorRateUnWeighted(InputRow.loadExamples(testingFile)));
+			double result = 100 * (1 - learner.errorRateUnWeighted(InputRow.Companion.loadExamples(testingFile)));
 			System.out.println("Testing accuracy: " + result);
 		}
 

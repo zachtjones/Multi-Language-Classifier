@@ -10,7 +10,7 @@ import com.zachjones.languageclassifier.model.types.DownloadedTrainingData
 import com.zachjones.languageclassifier.model.types.DownloadedTrainingDataResult
 import com.zachjones.languageclassifier.model.types.Language
 import examples.GetWikipediaContent
-import main.InputRow
+import com.zachjones.languageclassifier.entities.InputRow
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Path
