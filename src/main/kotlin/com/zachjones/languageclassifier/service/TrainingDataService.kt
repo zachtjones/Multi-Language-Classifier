@@ -6,8 +6,8 @@ import com.zachjones.languageclassifier.entities.InputRow
 import com.zachjones.languageclassifier.entities.TRAINING_DATA_PREFIX
 import com.zachjones.languageclassifier.entities.TRAINING_DATA_SUFFIX
 import com.zachjones.languageclassifier.model.DgsConstants
-import com.zachjones.languageclassifier.model.types.DownloadedTrainingData
 import com.zachjones.languageclassifier.model.types.Language
+import com.zachjones.languageclassifier.model.types.TrainingData
 import examples.GetWikipediaContent
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -19,7 +19,7 @@ import kotlin.io.path.name
 @Component
 class TrainingDataService {
 
-    private val loadedDataMetadata = mutableListOf<DownloadedTrainingData>()
+    private val loadedDataMetadata = mutableListOf<TrainingData>()
     private val loadedData = hashMapOf<String, List<InputRow>>()
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -35,7 +35,7 @@ class TrainingDataService {
         loadedData += trainingData
 
         loadedDataMetadata += loadedData.map {
-            DownloadedTrainingData(
+            TrainingData(
                 id = it.key,
                 // assuming all words are the same size
                 numberOfPhrasesInEachLanguage = it.value.size / Language.values().size,
@@ -48,7 +48,7 @@ class TrainingDataService {
     private fun getFileName(id: String) = "$DATA_PATH$TRAINING_DATA_PREFIX${id}$TRAINING_DATA_SUFFIX"
 
     @DgsMutation(field = DgsConstants.MUTATION.DownloadTrainingData)
-    fun downloadTrainingData(phrasesPerLanguage: Int): DownloadedTrainingData {
+    fun downloadTrainingData(phrasesPerLanguage: Int): TrainingData {
         // TODO - base on input
         val phraseWordLength = 20
 
@@ -59,21 +59,16 @@ class TrainingDataService {
         // TODO - return the data instead of having to load it
         val createdData = InputRow.loadExamples(filename)
         loadedData[id] = createdData
-        loadedDataMetadata.add(
-            DownloadedTrainingData(
-                id = id,
-                numberOfPhrasesInEachLanguage = phrasesPerLanguage,
-                phraseWordLength = phraseWordLength
-            )
-        )
-        return DownloadedTrainingData(
+        val newMetaData = TrainingData(
             id = id,
             numberOfPhrasesInEachLanguage = phrasesPerLanguage,
             phraseWordLength = phraseWordLength
         )
+        loadedDataMetadata.add(newMetaData)
+        return newMetaData
     }
 
-    fun trainingDataSets(): List<DownloadedTrainingData> {
+    fun trainingDataSets(): List<TrainingData> {
         return loadedDataMetadata
     }
 

@@ -76,15 +76,16 @@ class TrainModelDataFetcher(
             }
         }
         model.saveTo(learnerFile)
-        // evaluate learner
-
-        //System.out.println(m.representation(0));
 
         // evaluate learner
         val accuracyPercent: Double = 100 * (1 - model.errorRateUnWeighted(trainingData))
         logger.info("Training accuracy: $accuracyPercent for model $modelId")
 
 
-        return TrainedModel(id = modelId, trainingAccuracyPercentage = accuracyPercent)
+        return TrainedModel(
+            modelId = modelId,
+            description = model.description,
+            trainingAccuracyPercentage = accuracyPercent
+        )
     }
 }

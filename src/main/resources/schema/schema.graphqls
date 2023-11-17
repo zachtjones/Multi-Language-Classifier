@@ -1,15 +1,16 @@
 type Query {
+    trainingData: TrainingDataResult!
     language(input: LanguageClassificationInput!): LanguageClassificationResult!
-    downloadedTrainingDataSets: DownloadedTrainingDataResult!
 }
 
 type Mutation {
-    downloadTrainingData(input: DownloadTrainingDataInput!): DownloadedTrainingData!
+    downloadTrainingData(input: DownloadTrainingDataInput!): TrainingData!
     trainModel(input: TrainModelInput!): TrainedModel!
 }
 
 type TrainedModel {
-    id: ID!
+    modelId: ID!
+    description: String!
     trainingAccuracyPercentage: Float!
 }
 
@@ -49,11 +50,11 @@ enum ModelType {
     ADAPTIVE_BOOSTING_TREE
 }
 
-type DownloadedTrainingDataResult {
-    trainingData: [DownloadedTrainingData!]!
+type TrainingDataResult {
+    trainingData: [TrainingData!]!
 }
 
-type DownloadedTrainingData {
+type TrainingData {
     id: ID!
     numberOfPhrasesInEachLanguage: Int!
     phraseWordLength: Int!
@@ -78,8 +79,7 @@ type LanguageProbability {
 
 input LanguageClassificationInput {
     phrase: String!
-    # other parameters, like maybe the model to use
-    # learner id perhaps?
+    modelId: ID!
 }
 
 enum Language {
