@@ -2,25 +2,21 @@ package com.zachjones.languageclassifier.controller
 
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
+import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
-import com.zachjones.languageclassifier.entities.DATA_PATH
-import com.zachjones.languageclassifier.entities.MODEL_PREFIX
-import com.zachjones.languageclassifier.entities.MODEL_SUFFIX
 import com.zachjones.languageclassifier.model.DgsConstants
 import com.zachjones.languageclassifier.model.types.ModelType
 import com.zachjones.languageclassifier.model.types.TrainModelInput
 import com.zachjones.languageclassifier.model.types.TrainedModel
+import com.zachjones.languageclassifier.model.types.TrainedModelsResult
+import com.zachjones.languageclassifier.service.ModelsService
 import com.zachjones.languageclassifier.service.TrainingDataService
-import learners.MultiClassifier
-import org.slf4j.LoggerFactory
-import java.util.UUID
 
 @DgsComponent
 class TrainModelDataFetcher(
-    private val trainingDataService: TrainingDataService
+    private val trainingDataService: TrainingDataService,
+    private val modelsService: ModelsService
 ) {
-
-    private val logger = LoggerFactory.getLogger(this::class.java)
 
     @DgsMutation(field = DgsConstants.MUTATION.TrainModel)
     fun trainModel(@InputArgument input: TrainModelInput): TrainedModel {
@@ -38,11 +34,7 @@ class TrainModelDataFetcher(
             }
         }
 
-        val modelId = UUID.randomUUID().toString()
-        val learnerFile = "$DATA_PATH$MODEL_PREFIX$modelId$MODEL_SUFFIX"
-
-        logger.info("Training model based on validated input: $input")
-        val model: MultiClassifier = when (input.modelType) {
+        return when (input.modelType) {
             ModelType.DECISION_TREE -> {
                 require(input.ensembleSize == null) {
                     "ensembleSize should be null when modelType=DECISION_TREE"
@@ -54,12 +46,11 @@ class TrainModelDataFetcher(
                         "Tree depth must be between 1 and 10"
                     }
                 }
-                MultiClassifier.learnDecisionTree(
-                    trainingData,
-                    treeDepth,
-                    attributeGenerations,
-                    attributePoolSize,
-                    true
+                modelsService.trainDecisionTreeModel(
+                    trainingData = trainingData,
+                    attributeGenerations = attributeGenerations,
+                    attributePoolSize = attributePoolSize,
+                    treeDepth = treeDepth
                 )
             }
             ModelType.ADAPTIVE_BOOSTING_TREE -> {
@@ -71,26 +62,20 @@ class TrainModelDataFetcher(
                 }.also { require(it in 2..20) {
                     "Ensemble size should be between 2 and 20"
                 } }
-                MultiClassifier.learnAdaBoost(
-                    trainingData,
-                    ensembleSize,
-                    attributeGenerations,
-                    attributePoolSize,
-                    true
+                modelsService.trainAdaptiveBoostingModel(
+                    trainingData = trainingData,
+                    attributeGenerations = attributeGenerations,
+                    attributePoolSize = attributePoolSize,
+                    ensembleSize = ensembleSize
                 )
             }
         }
-        model.saveTo(learnerFile)
+    }
 
-        // evaluate learner
-        val accuracyPercent: Double = 100 * (1 - model.errorRateUnWeighted(trainingData))
-        logger.info("Training accuracy: $accuracyPercent for model $modelId")
-
-
-        return TrainedModel(
-            modelId = modelId,
-            description = model.description,
-            trainingAccuracyPercentage = accuracyPercent
+    @DgsQuery(field = DgsConstants.QUERY.Models)
+    fun models(): TrainedModelsResult {
+        return TrainedModelsResult(
+            models = modelsService.models()
         )
     }
 }

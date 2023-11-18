@@ -1,11 +1,16 @@
 type Query {
     trainingData: TrainingDataResult!
+    models: TrainedModelsResult!
     language(input: LanguageClassificationInput!): LanguageClassificationResult!
 }
 
 type Mutation {
     downloadTrainingData(input: DownloadTrainingDataInput!): TrainingData!
     trainModel(input: TrainModelInput!): TrainedModel!
+}
+
+type TrainedModelsResult {
+    models: [TrainedModel!]!
 }
 
 type TrainedModel {
