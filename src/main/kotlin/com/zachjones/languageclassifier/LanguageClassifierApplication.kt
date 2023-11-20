@@ -3,13 +3,9 @@ package com.zachjones.languageclassifier
 import com.zachjones.languageclassifier.entities.DATA_PATH
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import java.io.FileOutputStream
-import java.io.PrintWriter
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import kotlin.io.path.createDirectories
 
 @SpringBootApplication

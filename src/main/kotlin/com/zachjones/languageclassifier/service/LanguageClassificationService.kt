@@ -1,14 +1,10 @@
 package com.zachjones.languageclassifier.service
 
-import com.zachjones.languageclassifier.entities.DATA_PATH
+import com.zachjones.languageclassifier.entities.InputRow
 import com.zachjones.languageclassifier.model.types.Language
 import com.zachjones.languageclassifier.model.types.LanguageClassificationInput
 import com.zachjones.languageclassifier.model.types.LanguageClassificationResult
 import com.zachjones.languageclassifier.model.types.LanguageProbability
-import learners.Decider
-import com.zachjones.languageclassifier.entities.InputRow
-import com.zachjones.languageclassifier.entities.MODEL_PREFIX
-import com.zachjones.languageclassifier.entities.MODEL_SUFFIX
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
