@@ -1,5 +1,6 @@
 package com.zachjones.languageclassifier.service
 
+import com.zachjones.languageclassifier.LanguageClassifierProperties
 import com.zachjones.languageclassifier.entities.DATA_PATH
 import com.zachjones.languageclassifier.entities.InputRow
 import com.zachjones.languageclassifier.entities.MODEL_PREFIX
@@ -16,7 +17,9 @@ import java.util.UUID
 import kotlin.io.path.name
 
 @Component
-class ModelsService {
+class ModelsService(
+    private val languageClassifierProperties: LanguageClassifierProperties
+) {
 
     private val loadedModelsMetadata = hashMapOf<String, TrainedModel>()
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -48,6 +51,7 @@ class ModelsService {
         attributePoolSize: Int,
         treeDepth: Int
     ): TrainedModel {
+        logger.info("Environment: ${languageClassifierProperties.environment}")
         val modelId = UUID.randomUUID().toString()
 
         logger.info("Training ${ModelType.DECISION_TREE} model, id=$modelId")
@@ -104,5 +108,13 @@ class ModelsService {
 
     fun models(): List<TrainedModel> {
         return loadedModelsMetadata.values.toList()
+    }
+
+    fun getModelById(id: String): Decider {
+        val model = loadedModelsMetadata.values
+            .firstOrNull { it.modelId == id }
+            ?: throw IllegalArgumentException("Model $id not found")
+
+        return Decider.loadFromFile("${DATA_PATH}${MODEL_PREFIX}${model.modelId}${MODEL_SUFFIX}")
     }
 }

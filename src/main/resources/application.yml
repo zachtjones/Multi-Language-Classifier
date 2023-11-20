@@ -1,4 +1,5 @@
 
+environment: local
 server:
   # port: 8080 -- set if you want something other than default 8080
   tomcat:

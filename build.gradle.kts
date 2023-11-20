@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -7,7 +6,6 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.3"
 	kotlin("jvm") version "1.8.22"
 	kotlin("plugin.spring") version "1.8.22"
-	id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "com.zach-jones"
@@ -56,9 +54,4 @@ tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
 	generateClient = false
 	packageName = "com.zachjones.languageclassifier.model"
 	schemaPaths = mutableListOf("${projectDir}/src/main/resources/schema")
-}
-
-
-tasks.withType<ShadowJar> {
-	archiveFileName.set("language-classifier-$version-aws.jar")
 }

@@ -1,7 +1,7 @@
 # Compiled class file
 *.class
-build/*
-gradle/*
+build
+gradle
 .gradle/*
 
 # Log file
@@ -31,3 +31,6 @@ hs_err_pid*
 
 # Mac OS
 *.DS_Store
+
+# Project specific files
+data
