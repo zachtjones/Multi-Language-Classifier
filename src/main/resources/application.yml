@@ -1,0 +1,20 @@
+
+environment: local
+server:
+  # port: 8080 -- set if you want something other than default 8080
+  tomcat:
+    #connection-timeout: 90000
+    #max-connections: 2400
+    accesslog:
+      enabled: true
+      pattern: "%{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}t [TomcatAccessLog] x_forwarded_for=\"%{X-Forwarded-For}i\" http_method=%m http_url=%U http_protocol=%H http_status=%s http_exec_time=%D user_agent=\"%{user-agent}i\""
+      buffered: false
+      rotate: false
+      # Log to stdout by setting the directory, prefix, suffix and file-date-format.
+      directory: /dev
+      prefix: stdout
+      suffix:
+      file-date-format:
+#    threads:
+#      max: 2400
+#      min-spare: 20

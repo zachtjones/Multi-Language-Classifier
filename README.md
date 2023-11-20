@@ -96,3 +96,42 @@ The above shows that the testing accuracy peaks at 97.2%, with 10 decision stump
 
 Each iteration of training took around 14 seconds, with the time only slightly increasing
 with larger ensemble sizes. The attribute learning took much of the time.
+
+## Building the JAR
+
+Install:
+* Gradle
+* Java 17+
+
+`gradle bootJar` to build the code into a jar suitable for running as `java -jar NAME`
+
+You can run this jar in the cloud by configuring the environment variable, `SPRING_PROFILES_ACTIVE`=`cloud`, and any other setup as you need in application-cloud.yml.
+
+This project uses Spring Boot, Netflix DGS (for GraphQL).
+
+## Running
+
+1. Use Intellij or any other IDE after importing this via gradle project
+2. Run in the cloud by any provider that can run a JAR (ex: aws elastic beanstalk)
+
+## Data files
+
+Data files are used for downloaded language data (for training/testing), stored in plain text.
+
+Trained models are serialized and written to the data directory as well.
+
+#### `data/*`
+
+This is where the generated models and downloaded language data will be written to.
+
+This is excluded from version control.
+
+#### `/src/main/resources/data/*`
+
+This directory will be copied to `/data/*` on application startup. 
+
+### Cloud
+
+The cloud will have a server with files present from the resources folder. 
+
+Any files generated from the running application will not be persisted long term unless copied and added to the resources folder.

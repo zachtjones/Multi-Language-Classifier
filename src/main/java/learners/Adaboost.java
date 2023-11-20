@@ -4,7 +4,7 @@ import attributes.Attributes;
 import helper.Pair;
 import helper.WeightedList;
 import helper.MultiLanguageDecision;
-import main.InputRow;
+import com.zachjones.languageclassifier.entities.InputRow;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,7 +54,7 @@ public class Adaboost implements Decider {
 			double error = 0.0;
 			for (int j = 0; j < inputs.size(); j++) {
 				Pair<Double, InputRow> row = inputs.get(j); // weight, example
-				if (!newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.outputValue)) {
+				if (!newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.getOutputValue())) {
 					error += row.one;
 				}
 			}
@@ -70,7 +70,7 @@ public class Adaboost implements Decider {
 			double reductionRate = error / (1 - error);
 			for (int j = 0; j < result.inputs.size(); j++) {
 				Pair<Double, InputRow> row = result.inputs.get(j);
-				if (newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.outputValue)) {
+				if (newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.getOutputValue())) {
 					result.inputs.setWeight(j, result.inputs.getWeight(j) * reductionRate);
 				}
 			}

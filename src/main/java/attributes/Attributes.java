@@ -1,6 +1,6 @@
 package attributes;
 
-import main.InputRow;
+import com.zachjones.languageclassifier.entities.InputRow;
 
 import java.io.Serializable;
 import java.util.List;
@@ -56,10 +56,10 @@ public abstract class Attributes implements Serializable, Comparable<Attributes>
 
 		for (InputRow r : inputs) {
 			if (thing.has(r)) {
-				if (r.outputValue.equals(languageOne)) countHasLangOne++;
+				if (r.getOutputValue().equals(languageOne)) countHasLangOne++;
 				else countHasLangTwo++;
 			} else {
-				if (r.outputValue.equals(languageOne)) countNoLangOne++;
+				if (r.getOutputValue().equals(languageOne)) countNoLangOne++;
 				else countNoLangTwo++;
 			}
 		}

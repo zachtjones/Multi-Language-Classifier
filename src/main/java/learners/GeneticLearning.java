@@ -1,7 +1,7 @@
 package learners;
 
 import attributes.*;
-import main.InputRow;
+import com.zachjones.languageclassifier.entities.InputRow;
 
 import java.util.*;
 
@@ -37,7 +37,7 @@ public class GeneticLearning {
 		pool = new TreeSet<>();
 		allWords = new ArrayList<>(inputs.size() * 20);
 		for (InputRow row : inputs) {
-			allWords.addAll(Arrays.asList(row.words));
+			allWords.addAll(row.getWords());
 		}
 
 		// fill in the pool with some randomly drawn attributes

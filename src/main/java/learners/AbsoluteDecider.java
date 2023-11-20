@@ -1,6 +1,6 @@
 package learners;
 
-import main.InputRow;
+import com.zachjones.languageclassifier.entities.InputRow;
 
 import java.util.HashMap;
 import java.util.Map;

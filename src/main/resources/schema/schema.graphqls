@@ -1,0 +1,106 @@
+type Query {
+    trainingData: TrainingDataResult!
+    models: TrainedModelsResult!
+    language(input: LanguageClassificationInput!): LanguageClassificationResult!
+}
+
+type Mutation {
+    downloadTrainingData(input: DownloadTrainingDataInput!): TrainingData!
+    trainModel(input: TrainModelInput!): TrainedModel!
+}
+
+type TrainedModelsResult {
+    models: [TrainedModel!]!
+}
+
+type TrainedModel {
+    modelId: ID!
+    description: String!
+    trainingAccuracyPercentage: Float!
+}
+
+input TrainModelInput {
+    trainingDataId: ID!
+
+    """
+    Number of generations for attribute evolution used in the model (1...100)
+    """
+    attributeGenerations: Int!
+    """
+    Number of attributes to retain for the next generation (10...500)
+    """
+    attributePoolSize: Int!
+
+    modelType: ModelType!
+
+    """
+    Number of levels to the tree (1...10) to use for learning when using Decision Trees
+    """
+    treeDepth: Int
+
+    """
+    Required for adaptive boost strategy, the number of trees that are used.
+    """
+    ensembleSize: Int
+}
+
+enum ModelType {
+    """
+    Generates a decision tree to determine pairwise between languages
+    """
+    DECISION_TREE
+    """
+    Generates an ensemble of decisions trees to determine pairwise between languages
+    """
+    ADAPTIVE_BOOSTING_TREE
+}
+
+type TrainingDataResult {
+    trainingData: [TrainingData!]!
+}
+
+type TrainingData {
+    id: ID!
+    numberOfPhrasesInEachLanguage: Int!
+    phraseWordLength: Int!
+}
+
+input DownloadTrainingDataInput {
+    """
+    Number of phrases to download in each language; min 10 max 1000
+    """
+    numberOfPhrasesInEachLanguage: Int!
+}
+
+type LanguageClassificationResult {
+    mostLikelyLanguage: Language!
+    probabilities: [LanguageProbability!]!
+}
+
+type LanguageProbability {
+    language: Language!
+    percentageLikely: Float!
+}
+
+input LanguageClassificationInput {
+    phrase: String!
+    modelId: ID!
+}
+
+enum Language {
+    Albanian
+    Croatia
+    Czech
+    Danish
+    Dutch
+    English
+    French
+    Gaelic
+    German
+    Hawaiian
+    Icelandic
+    Italian
+    Romanian
+    Samoan
+    Spanish
+}

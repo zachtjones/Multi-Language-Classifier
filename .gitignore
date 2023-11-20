@@ -1,5 +1,8 @@
 # Compiled class file
 *.class
+build
+gradle
+.gradle/*
 
 # Log file
 *.log
@@ -25,3 +28,9 @@ hs_err_pid*
 # IntelliJ stuff
 .idea/
 *.iml
+
+# Mac OS
+*.DS_Store
+
+# Project specific files
+data

@@ -1,6 +1,6 @@
 package learners;
 
-import main.InputRow;
+import com.zachjones.languageclassifier.entities.InputRow;
 
 /***
  * Represents a decider with a percentage of confidence known that is not 0 or 1.
