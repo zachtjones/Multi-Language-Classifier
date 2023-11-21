@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+
+    <springProfile name="default">
+        <property name="LOG_LEVEL" value="INFO"/>
+    </springProfile>
+
+    <springProfile name="local">
+        <property name="LOG_LEVEL" value="DEBUG"/>
+    </springProfile>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <appender name="CONSOLE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="CONSOLE"/>
+        <includeCallerData>true</includeCallerData>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE_ASYNC"/>
+    </root>
+
+</configuration>
