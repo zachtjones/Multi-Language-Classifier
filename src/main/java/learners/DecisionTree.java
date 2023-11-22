@@ -41,7 +41,9 @@ public class DecisionTree implements Decider {
 	 */
 	public static Decider learn(WeightedList<InputRow> allData, int levelLeft, Set<Attributes> optionsLeft,
 								int totalSize, String languageOne, String languageTwo) {
-
+		if (allData.size() == 0) {
+			throw new IllegalArgumentException("All data size should not be 0");
+		}
 
 		// count how many have output LanguageOne
 		long countOne = allData.stream().filter(languageIs(languageOne)).count();
@@ -81,6 +83,14 @@ public class DecisionTree implements Decider {
 		optionsLeftFalse.remove(best);
 		Set<Attributes> optionsLeftTrue = new HashSet<>(optionsLeft);
 		optionsLeftTrue.remove(best);
+
+		// single recursive where this attribute does not help
+		if (trueOnes.size() == 0) {
+			return learn(falseOnes, levelLeft, optionsLeftFalse, totalSize, languageOne, languageTwo);
+		}
+		if (falseOnes.size() == 0) {
+			return learn(trueOnes, levelLeft, optionsLeftTrue, totalSize, languageOne, languageTwo);
+		}
 
 		// do the recursive calls
 		Decider left = learn(falseOnes, levelLeft - 1, optionsLeftFalse, totalSize, languageOne, languageTwo);
