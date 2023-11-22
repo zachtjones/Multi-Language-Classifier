@@ -21,6 +21,9 @@ public class ConfidenceDecider extends LanguageDecision implements Decider {
         this.languageOne = languageOne;
         this.languageTwo = languageTwo;
         this.fractionOne = fractionOne;
+        if (Double.isNaN(fractionOne)) {
+            throw new IllegalArgumentException("Confidence decider can not be NaN");
+        }
     }
 
     @Override
