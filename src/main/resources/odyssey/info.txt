@@ -1,0 +1,15 @@
+odyssey-english.txt
+* obtained via https://classics.mit.edu/Homer/odyssey.mb.txt
+
+odyssey-spanish.txt
+* obtained via https://www.gutenberg.org/ebooks/58221
+
+odyssey-french.txt
+* obtained via https://www.gutenberg.org/ebooks/52927
+
+odyssey-swedish.txt
+* obtained via https://www.gutenberg.org/ebooks/54200
+
+odyssey-german.txt
+* obtained via https://www.projekt-gutenberg.org/homer/odyssee/odyssee.html
+* copied and pasted the text into the file and removed line numbers, grouped into 5 line segments
