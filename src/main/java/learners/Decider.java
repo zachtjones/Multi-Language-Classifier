@@ -1,6 +1,7 @@
 package learners;
 
 import com.zachjones.languageclassifier.entities.InputRow;
+import com.zachjones.languageclassifier.entities.LanguageDecision;
 
 import java.io.*;
 import java.util.List;
@@ -17,7 +18,7 @@ public interface Decider extends Serializable {
 	default double errorRateUnWeighted(List<InputRow> testingData) {
 		double total = testingData.size();
 		double correct = testingData.stream()
-			.filter(i -> this.decide(i).mostConfidentLanguage().equals(i.getOutputValue()))
+			.filter(i -> this.decide(i).mostConfidentLanguage().equals(i.getLanguage()))
 			.count();
 
 		return (total - correct) / total;

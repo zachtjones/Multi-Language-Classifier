@@ -1,3 +1,5 @@
+For all of these, I removed the line numbers and grouped into paragraphs using regex operations.
+
 odyssey-english.txt
 * obtained via https://classics.mit.edu/Homer/odyssey.mb.txt
 
@@ -12,4 +14,3 @@ odyssey-swedish.txt
 
 odyssey-german.txt
 * obtained via https://www.projekt-gutenberg.org/homer/odyssee/odyssee.html
-* copied and pasted the text into the file and removed line numbers, grouped into 5 line segments

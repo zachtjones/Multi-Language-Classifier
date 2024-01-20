@@ -1,3 +1,5 @@
-model-172f96eb-5c6e-400c-b643-6304f91439f4.dat
-training-193af1f8-c8fc-4c09-91cb-bd060032eeb7.txt
-training-bb8d5042-cf13-41c4-a1c0-7dd03be1ae00.txt
+odyssey-english.txt
+odyssey-french.txt
+odyssey-german.txt
+odyssey-spanish.txt
+odyssey-swedish.txt

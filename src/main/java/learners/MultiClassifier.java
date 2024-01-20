@@ -1,15 +1,18 @@
 package learners;
 
-import helper.Pair;
-import helper.WeightedList;
-import attributes.Attributes;
-import helper.MultiLanguageDecision;
+import com.zachjones.languageclassifier.attribute.Attribute;
 import com.zachjones.languageclassifier.entities.InputRow;
-import main.Learning;
+import com.zachjones.languageclassifier.entities.LanguageDecision;
+import com.zachjones.languageclassifier.entities.MultiLanguageDecision;
+import com.zachjones.languageclassifier.model.types.Language;
+import helper.WeightedList;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.zachjones.languageclassifier.entities.LanguageKt.getLanguagePairs;
 
 public class MultiClassifier implements Serializable, Decider {
 
@@ -57,26 +60,9 @@ public class MultiClassifier implements Serializable, Decider {
 	}
 
 
-	/**
-	 * Learns a Neural Network, composed of perceptrons
-	 * @param rows The list of labeled input
-	 * @param hiddenLayers The number of hidden layers, 0 or more.
-	 * @param nodesPerLayer The number of nodes per layer, 1 or more.
-	 * @param numberGenerations The number of generations on the genetic algorithm for attributes
-	 * @param poolSize The number of attributes to keep in the pool
-	 * @param printBinaryAccuracy Whether to print out the accuracy of the binary deciders or not
-	 * @return A multi-classifier based on the neural network for each language pair.
-	 */
-	public static MultiClassifier learnNeuralNetwork(List<InputRow> rows, int hiddenLayers, int nodesPerLayer,
-													 int numberGenerations, int poolSize, boolean printBinaryAccuracy) {
-
-		return learn(rows, "neural", numberGenerations, poolSize, printBinaryAccuracy, hiddenLayers, nodesPerLayer);
-	}
-
 	private static MultiClassifier learn(List<InputRow> rows, String method, int numberGenerations,
 										 int poolSize, boolean printBinaryAccuracy, int... param) {
 
-		List<Pair<String, String>> languagePairs = Learning.languagePairs;
 		String description = "Model using " + rows.size() +
 				" total phrases, method=" + method +
 				", attributeGenerations=" + numberGenerations +
@@ -89,15 +75,15 @@ public class MultiClassifier implements Serializable, Decider {
 
 		// each sub-problem: learning to distinguish a pair of languages
 		//   - can run each of these sub-problems in parallel
-		List<Decider> allTrees = languagePairs.parallelStream().map(pair -> {
-			String first = pair.one;
-			String second = pair.two;
+		List<Decider> allTrees = getLanguagePairs().parallelStream().map(pair -> {
+			Language first = pair.one;
+			Language second = pair.two;
 
 			List<InputRow> twoLanguages = rows.stream()
-				.filter(i -> i.getOutputValue().equals(first) || i.getOutputValue().equals(second))
+				.filter(i -> i.getLanguage() == first || i.getLanguage() == second)
 				.collect(Collectors.toList());
 
-			Set<Attributes> attributes =
+			Set<Attribute> attributes =
 				GeneticLearning.learnAttributes(twoLanguages, first, second, numberGenerations, poolSize);
 
 			// learn a decision tree based on the attributes, with depth

@@ -1,14 +1,20 @@
 package learners;
 
-import attributes.*;
+import com.zachjones.languageclassifier.attribute.Attribute;
+import com.zachjones.languageclassifier.attribute.LetterFrequencyAttribute;
+import com.zachjones.languageclassifier.attribute.WordAttribute;
+import com.zachjones.languageclassifier.attribute.WordContainsAttribute;
+import com.zachjones.languageclassifier.attribute.WordEndingAttribute;
+import com.zachjones.languageclassifier.attribute.WordStartingAttribute;
 import com.zachjones.languageclassifier.entities.InputRow;
+import com.zachjones.languageclassifier.model.types.Language;
 
 import java.util.*;
 
 public class GeneticLearning {
 
 	/** Holds the pool of potential attributes */
-	private final TreeSet<Attributes> pool;
+	private final TreeSet<Attribute> pool;
 
 	/** Holds a list of all the words that are in the input. */
 	private final List<String> allWords;
@@ -17,7 +23,7 @@ public class GeneticLearning {
 	private final List<InputRow> inputs;
 
 	/** The two languages to split between */
-	private final String languageOne, languageTwo;
+	private final Language languageOne, languageTwo;
 
 	/** Random used for chances with mutation possibilities */
 	private final Random r = new Random();
@@ -28,7 +34,7 @@ public class GeneticLearning {
 	 * @param languageOne The first language.
 	 * @param languageTwo The second language.
 	 */
-	private GeneticLearning(List<InputRow> inputs, String languageOne, String languageTwo) {
+	private GeneticLearning(List<InputRow> inputs, Language languageOne, Language languageTwo) {
 		this.languageOne = languageOne;
 		this.languageTwo = languageTwo;
 
@@ -41,31 +47,31 @@ public class GeneticLearning {
 		}
 
 		// fill in the pool with some randomly drawn attributes
-		Attributes noUse = new WordAttribute("a", inputs, languageOne);
+		Attribute noUse = new WordAttribute("a", inputs, languageOne);
 		for (int i = 0; i < 20; i++) {
 			pool.add(noUse.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
 		// letter frequency
-		Attributes noUseLetters = new LetterFrequencyAttribute('a', 'z', inputs, languageOne);
+		Attribute noUseLetters = new LetterFrequencyAttribute('a', 'z', inputs, languageOne);
 		for (int i = 0; i < 20; i++) {
 			pool.add(noUseLetters.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
 		// word endings
-		Attributes noUseEnding = new WordEndingAttribute("", inputs, languageOne);
+		Attribute noUseEnding = new WordEndingAttribute("", inputs, languageOne);
 		for (int i = 0; i < 20; i++) {
 			pool.add(noUseEnding.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
 		// word starting
-		Attributes noUseStarting = new WordStartingAttribute("", inputs, languageOne);
+		Attribute noUseStarting = new WordStartingAttribute("", inputs, languageOne);
 		for (int i = 0; i < 20; i++) {
 			pool.add(noUseStarting.mutate(allWords, inputs, languageOne, languageTwo));
 		}
 
 		// word contains
-		Attributes noUseContaining = new WordContainsAttribute("", inputs, languageOne);
+		Attribute noUseContaining = new WordContainsAttribute("", inputs, languageOne);
 		for (int i = 0; i < 20; i++) {
 			pool.add(noUseContaining.mutate(allWords, inputs, languageOne, languageTwo));
 		}
@@ -77,9 +83,9 @@ public class GeneticLearning {
 	 */
 	private void nextGeneration(int maxPoolSize) {
 		// mutate some random ones, proportional to their fitness
-		TreeSet<Attributes> newOnes = new TreeSet<>();
+		TreeSet<Attribute> newOnes = new TreeSet<>();
 
-		for (Attributes i : pool) {
+		for (Attribute i : pool) {
 			double chance = i.getFitness();
 			if (r.nextDouble() < chance) {
 				// do the mutation and add it to the pool
@@ -108,8 +114,8 @@ public class GeneticLearning {
 	 * @param poolSize The pool size of attributes to retain.
 	 * @return The set of attributes learned.
 	 */
-	static Set<Attributes> learnAttributes(List<InputRow> inputs, String languageOne, String languageTwo,
-											int numberGenerations, int poolSize) {
+	static Set<Attribute> learnAttributes(List<InputRow> inputs, Language languageOne, Language languageTwo,
+										  int numberGenerations, int poolSize) {
 		// iterate 100 generations
 		GeneticLearning learning = new GeneticLearning(inputs, languageOne, languageTwo);
 		for (int i = 0; i < numberGenerations; i++) {

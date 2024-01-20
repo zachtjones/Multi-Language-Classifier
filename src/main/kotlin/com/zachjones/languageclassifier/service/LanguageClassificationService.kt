@@ -18,16 +18,15 @@ class LanguageClassificationService(
     fun classify(input: LanguageClassificationInput): LanguageClassificationResult {
         val decider = modelsService.getModelById(input.modelId)
 
-        val decision = decider.decide(InputRow(input.phrase))
+        val decision = decider.decide(InputRow(language = null, words = input.phrase))
         logger.info("Analyzed the phrase submitted successfully")
 
         return LanguageClassificationResult(
-            // TODO - convert the repo to use enum everywhere instead
-            mostLikelyLanguage = Language.valueOf(decision.mostConfidentLanguage()),
+            mostLikelyLanguage = decision.mostConfidentLanguage(),
             probabilities = Language.values().map {
                 LanguageProbability(
                     language = it,
-                    percentageLikely = decision.confidenceForLanguage(it.name) * 100
+                    percentageLikely = decision.confidenceForLanguage(it) * 100
                 )
             }.sortedByDescending { it.percentageLikely }
         )

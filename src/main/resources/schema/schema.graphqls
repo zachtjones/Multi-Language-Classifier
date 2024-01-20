@@ -5,7 +5,7 @@ type Query {
 }
 
 type Mutation {
-    downloadTrainingData(input: DownloadTrainingDataInput!): TrainingData!
+    createTrainingData(input: CreateTrainingDataInput!): TrainingData!
     trainModel(input: TrainModelInput!): TrainedModel!
 }
 
@@ -62,12 +62,11 @@ type TrainingDataResult {
 type TrainingData {
     id: ID!
     numberOfPhrasesInEachLanguage: Int!
-    phraseWordLength: Int!
 }
 
-input DownloadTrainingDataInput {
+input CreateTrainingDataInput {
     """
-    Number of phrases to download in each language; min 10 max 1000
+    Number of phrases to download in each language; min 10 max 2000
     """
     numberOfPhrasesInEachLanguage: Int!
 }
@@ -88,19 +87,9 @@ input LanguageClassificationInput {
 }
 
 enum Language {
-    Albanian
-    Croatia
-    Czech
-    Danish
-    Dutch
-    English
-    French
-    Gaelic
-    German
-    Hawaiian
-    Icelandic
-    Italian
-    Romanian
-    Samoan
-    Spanish
+    ENGLISH
+    FRENCH
+    GERMAN
+    SPANISH
+    SWEDISH
 }

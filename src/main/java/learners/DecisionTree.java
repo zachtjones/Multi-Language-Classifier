@@ -1,7 +1,9 @@
 package learners;
 
-import attributes.Attributes;
+import com.zachjones.languageclassifier.attribute.Attribute;
 import com.zachjones.languageclassifier.entities.InputRow;
+import com.zachjones.languageclassifier.entities.LanguageDecision;
+import com.zachjones.languageclassifier.model.types.Language;
 import helper.Pair;
 import helper.WeightedList;
 import main.*;
@@ -13,17 +15,17 @@ public class DecisionTree implements Decider {
 
 	private final Decider left; // could be a tree or a -- if false, this is evaluated
 	private final Decider right; // could be a tree of b -- if true, this is evaluated
-	private final Attributes splitOn; // attribute to split on
+	private final Attribute splitOn; // attribute to split on
 
 	/** Creates a decision tree given the left and right decisions, and the index of the attributes it splits on. */
-	private DecisionTree(Decider left, Decider right, Attributes splitOn) {
+	private DecisionTree(Decider left, Decider right, Attribute splitOn) {
 		this.left = left;
 		this.right = right;
 		this.splitOn = splitOn;
 	}
 
-	private static Predicate<Pair<Double, InputRow>> languageIs(String language) {
-		return i -> i.two.getOutputValue().equals(language);
+	private static Predicate<Pair<Double, InputRow>> languageIs(Language language) {
+		return i -> i.two.getLanguage() == language;
 	}
 
 	/**
@@ -39,8 +41,8 @@ public class DecisionTree implements Decider {
 	 * @param languageTwo The second language
 	 * @return A learned decision tree.
 	 */
-	public static Decider learn(WeightedList<InputRow> allData, int levelLeft, Set<Attributes> optionsLeft,
-								int totalSize, String languageOne, String languageTwo) {
+	public static Decider learn(WeightedList<InputRow> allData, int levelLeft, Set<Attribute> optionsLeft,
+								int totalSize, Language languageOne, Language languageTwo) {
 		if (allData.size() == 0) {
 			throw new IllegalArgumentException("All data size should not be 0");
 		}
@@ -65,23 +67,23 @@ public class DecisionTree implements Decider {
 		}
 
 		// split on the best attribute - based on information gain
-		Optional<Pair<Attributes, Double>> result = optionsLeft.stream()
+		Optional<Pair<Attribute, Double>> result = optionsLeft.stream()
 			.map(i -> new Pair<>(i, entropyForDecision(i, allData, totalSize, languageOne))) // pair<att, entropy>
 			.min(Comparator.comparingDouble( pair -> pair.two));
 
 		// result should be present -- if not we still have depth left but have exhausted options
-		if (!result.isPresent()) {
+		if (result.isEmpty()) {
 			// ran out of options, just return the majority
 			return learn(allData, 0, Collections.emptySet(), totalSize, languageOne, languageTwo);
 		}
-		Attributes best = result.get().one;
+		Attribute best = result.get().one;
 
 		WeightedList<InputRow> trueOnes = allData.valuesWith(best::has);
 		WeightedList<InputRow> falseOnes = allData.valuesWith(best::doesntHave);
 		// need copies so they don't modify each other
-		Set<Attributes> optionsLeftFalse = new HashSet<>(optionsLeft);
+		Set<Attribute> optionsLeftFalse = new HashSet<>(optionsLeft);
 		optionsLeftFalse.remove(best);
-		Set<Attributes> optionsLeftTrue = new HashSet<>(optionsLeft);
+		Set<Attribute> optionsLeftTrue = new HashSet<>(optionsLeft);
 		optionsLeftTrue.remove(best);
 
 		// single recursive where this attribute does not help
@@ -101,7 +103,7 @@ public class DecisionTree implements Decider {
 	}
 
 	/** Returns the entropy associated with a decision to split on attribute index. */
-	private static double entropyForDecision(Attributes attribute, WeightedList<InputRow> allData, int totalSize, String languageOne) {
+	private static double entropyForDecision(Attribute attribute, WeightedList<InputRow> allData, int totalSize, Language languageOne) {
 		// split into the two sets - calculate entropy on each
 		WeightedList<InputRow> falseOnes = allData.valuesWith(attribute::doesntHave);
 		WeightedList<InputRow> trueOnes = allData.valuesWith(attribute::has);
@@ -112,13 +114,13 @@ public class DecisionTree implements Decider {
 	}
 
 	/** Returns the entropy for a list of data in bits. */
-	private static double entropyForList(WeightedList<InputRow> allData, String languageOne) {
+	private static double entropyForList(WeightedList<InputRow> allData, Language languageOne) {
 		// if there's no data, entropy is 0
 		if (allData.size() == 0) return 0;
 
 		double total = allData.totalWeight();
 		// arbitrary - defined first to be true (doesn't matter since symmetric distribution).
-		double eAmount = allData.valuesWith(i -> i.getOutputValue().equals(languageOne)).totalWeight();
+		double eAmount = allData.valuesWith(i -> i.getLanguage() == languageOne).totalWeight();
 
 		return entropyForBoolean(eAmount / total);
 	}
