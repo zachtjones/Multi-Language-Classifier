@@ -25,13 +25,13 @@ class TrainModelDataFetcher(
         val testingData = trainingDataService.getTrainingDataSet(input.testingDataId)
 
         val attributeGenerations = input.attributeGenerations.also {
-            require(it in 1..100) {
-                "Attribute generations must be between 1 and 100"
+            require(it in 1..200) {
+                "Attribute generations must be between 1 and 200"
             }
         }
         val attributePoolSize = input.attributePoolSize.also {
-            require(it in 10..500) {
-                "Attribute pool size must be between 10 and 500"
+            require(it in 10..1000) {
+                "Attribute pool size must be between 10 and 1000"
             }
         }
 
@@ -42,10 +42,6 @@ class TrainModelDataFetcher(
                 }
                 val treeDepth = requireNotNull(input.treeDepth){
                     "Tree depth required for DECISION_TREE"
-                }.also {
-                    require(it in 1..10) {
-                        "Tree depth must be between 1 and 10"
-                    }
                 }
                 modelsService.trainDecisionTreeModel(
                     trainingData = trainingData,
@@ -61,9 +57,7 @@ class TrainModelDataFetcher(
                 }
                 val ensembleSize = requireNotNull(input.ensembleSize) {
                     "Ensemble size required for ADAPTIVE_BOOSTING_TREE"
-                }.also { require(it in 2..20) {
-                    "Ensemble size should be between 2 and 20"
-                } }
+                }
                 modelsService.trainAdaptiveBoostingModel(
                     trainingData = trainingData,
                     testingData = testingData,

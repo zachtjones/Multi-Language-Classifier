@@ -33,23 +33,23 @@ input TrainModelInput {
     testingDataId: ID!
 
     """
-    Number of generations for attribute evolution used in the model (1...100)
+    Number of generations for attribute evolution used in the model
     """
     attributeGenerations: Int!
     """
-    Number of attributes to retain for the next generation (10...500)
+    Number of attributes to retain for the next generation
     """
     attributePoolSize: Int!
 
     modelType: ModelType!
 
     """
-    Number of levels to the tree (1...10) to use for learning when using Decision Trees
+    Number of levels to the tree to use for learning when using Decision Trees
     """
     treeDepth: Int
 
     """
-    Required for adaptive boost strategy, the number of trees that are used.
+    Required for adaptive boost strategy, the number of trees that are used
     """
     ensembleSize: Int
 }
