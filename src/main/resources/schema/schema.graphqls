@@ -17,10 +17,20 @@ type TrainedModel {
     modelId: ID!
     description: String!
     trainingAccuracyPercentage: Float!
+    testingAccuracyPercentage: Float!
 }
 
 input TrainModelInput {
+    """
+    Input data ID for using to train the model
+    """
     trainingDataId: ID!
+
+    """
+    Input data ID for data used after training to determine accuracy, should be different than training.
+    If same as training, then it will be result in the same number for training/testing accuracy.
+    """
+    testingDataId: ID!
 
     """
     Number of generations for attribute evolution used in the model (1...100)
@@ -62,6 +72,7 @@ type TrainingDataResult {
 type TrainingData {
     id: ID!
     numberOfPhrasesInEachLanguage: Int!
+    averageWordCountPerPhrase: Float!
 }
 
 input CreateTrainingDataInput {

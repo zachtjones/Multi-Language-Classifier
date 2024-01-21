@@ -22,6 +22,7 @@ class TrainModelDataFetcher(
     fun trainModel(@InputArgument input: TrainModelInput): TrainedModel {
 
         val trainingData = trainingDataService.getTrainingDataSet(input.trainingDataId)
+        val testingData = trainingDataService.getTrainingDataSet(input.testingDataId)
 
         val attributeGenerations = input.attributeGenerations.also {
             require(it in 1..100) {
@@ -48,6 +49,7 @@ class TrainModelDataFetcher(
                 }
                 modelsService.trainDecisionTreeModel(
                     trainingData = trainingData,
+                    testingData = testingData,
                     attributeGenerations = attributeGenerations,
                     attributePoolSize = attributePoolSize,
                     treeDepth = treeDepth
@@ -64,6 +66,7 @@ class TrainModelDataFetcher(
                 } }
                 modelsService.trainAdaptiveBoostingModel(
                     trainingData = trainingData,
+                    testingData = testingData,
                     attributeGenerations = attributeGenerations,
                     attributePoolSize = attributePoolSize,
                     ensembleSize = ensembleSize

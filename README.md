@@ -62,6 +62,17 @@ I've learned some techniques in college but did not go very in depth. This proje
 
 ## Results
 
+All of these results are based on a series of models trained based on:
+* Training data ID: 1cd98469-5366-48c9-b837-438ca8ba042c
+* Testing data ID: 35f4fd52-959d-4828-86d6-2193d4e22844
+* Computer resources: Apple Macbook Pro 2021 w/ M1 Max
+
+### Decision Trees
+
+
+### Adaptive Boosting
+
+
 trainModel(input: {
 trainingDataId: "1cd98469-5366-48c9-b837-438ca8ba042c",
 attributeGenerations: 100,

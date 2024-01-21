@@ -4,6 +4,7 @@ import com.zachjones.languageclassifier.entities.DATA_PATH
 import com.zachjones.languageclassifier.entities.InputRow
 import com.zachjones.languageclassifier.entities.TRAINING_DATA_PREFIX
 import com.zachjones.languageclassifier.entities.TRAINING_DATA_SUFFIX
+import com.zachjones.languageclassifier.entities.averageWordCount
 import com.zachjones.languageclassifier.entities.poemSourceFile
 import com.zachjones.languageclassifier.model.types.Language
 import com.zachjones.languageclassifier.model.types.TrainingData
@@ -39,7 +40,8 @@ class TrainingDataService(
             TrainingData(
                 id = it.key,
                 // assuming all words are the same size
-                numberOfPhrasesInEachLanguage = it.value.size / Language.values().size
+                numberOfPhrasesInEachLanguage = it.value.size / Language.values().size,
+                averageWordCountPerPhrase = it.value.averageWordCount()
             )
         }
         logger.info("Loaded ${loadedData.size} training data sets")
@@ -63,6 +65,7 @@ class TrainingDataService(
         val newMetaData = TrainingData(
             id = id,
             numberOfPhrasesInEachLanguage = phrasesPerLanguage,
+            averageWordCountPerPhrase = input.averageWordCount()
         )
         loadedDataMetadata.add(newMetaData)
         logger.info("Created training data id=$id")
