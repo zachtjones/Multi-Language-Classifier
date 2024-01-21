@@ -1,23 +1,24 @@
 package com.zachjones.languageclassifier.service
 
-import com.netflix.graphql.dgs.DgsMutation
 import com.zachjones.languageclassifier.entities.DATA_PATH
 import com.zachjones.languageclassifier.entities.InputRow
 import com.zachjones.languageclassifier.entities.TRAINING_DATA_PREFIX
 import com.zachjones.languageclassifier.entities.TRAINING_DATA_SUFFIX
-import com.zachjones.languageclassifier.model.DgsConstants
+import com.zachjones.languageclassifier.entities.poemSourceFile
 import com.zachjones.languageclassifier.model.types.Language
 import com.zachjones.languageclassifier.model.types.TrainingData
-import examples.GetWikipediaContent
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.UUID
+import kotlin.io.path.Path
 import kotlin.io.path.name
 
 @Component
-class TrainingDataService {
+class TrainingDataService(
+    private val fileOperationService: FileOperationService
+) {
 
     private val loadedDataMetadata = mutableListOf<TrainingData>()
     private val loadedData = hashMapOf<String, List<InputRow>>()
@@ -29,8 +30,8 @@ class TrainingDataService {
         }.toList()
         val trainingData = files.map {
             val id = it.name.removePrefix(TRAINING_DATA_PREFIX).removeSuffix(TRAINING_DATA_SUFFIX)
-
-            return@map id to InputRow.loadExamples(it.toFile().absolutePath)
+            val trainingData = fileOperationService.readJsonFile<List<InputRow>>(getFileName(id))
+            return@map id to trainingData
         }.associate { it.first to it.second }
         loadedData += trainingData
 
@@ -38,34 +39,48 @@ class TrainingDataService {
             TrainingData(
                 id = it.key,
                 // assuming all words are the same size
-                numberOfPhrasesInEachLanguage = it.value.size / Language.values().size,
-                phraseWordLength = it.value[0].words.size
+                numberOfPhrasesInEachLanguage = it.value.size / Language.values().size
             )
         }
         logger.info("Loaded ${loadedData.size} training data sets")
     }
 
-    private fun getFileName(id: String) = "$DATA_PATH$TRAINING_DATA_PREFIX${id}$TRAINING_DATA_SUFFIX"
+    private fun getFileName(id: String) = Path("$DATA_PATH$TRAINING_DATA_PREFIX${id}$TRAINING_DATA_SUFFIX")
 
-    @DgsMutation(field = DgsConstants.MUTATION.DownloadTrainingData)
-    fun downloadTrainingData(phrasesPerLanguage: Int): TrainingData {
-        // TODO - base on input
-        val phraseWordLength = 20
-
+    fun createTrainingData(phrasesPerLanguage: Int): TrainingData {
         val id = UUID.randomUUID().toString()
-        val filename = getFileName(id)
+        logger.info("Creating training data id=$id with $phrasesPerLanguage phrases per language")
 
-        GetWikipediaContent.main(filename, phrasesPerLanguage)
-        // TODO - return the data instead of having to load it
-        val createdData = InputRow.loadExamples(filename)
-        loadedData[id] = createdData
+        val input: List<InputRow> = Language.values().flatMap { language ->
+            createInputRows(language, phrasesPerLanguage).also {
+                logger.info("Created training data for: $language")
+            }
+        }
+
+        fileOperationService.writeJsonFile(getFileName(id), input)
+
+        loadedData[id] = input
         val newMetaData = TrainingData(
             id = id,
             numberOfPhrasesInEachLanguage = phrasesPerLanguage,
-            phraseWordLength = phraseWordLength
         )
         loadedDataMetadata.add(newMetaData)
+        logger.info("Created training data id=$id")
         return newMetaData
+    }
+
+    private fun createInputRows(language: Language, numberExamples: Int): List<InputRow> {
+        val filename = poemSourceFile(language)
+        // TODO see if the paragraphs training is better, or just doing one line at a time
+        val fileContent = this::class.java.classLoader.getResourceAsStream(filename)!!
+            .bufferedReader(Charsets.UTF_8)
+            .readLines()
+            .filter { it.length > 20 } // skip empty and short lines
+
+        return fileContent
+            .shuffled()
+            .take(numberExamples)
+            .map { InputRow(language, it) }
     }
 
     fun trainingDataSets(): List<TrainingData> {

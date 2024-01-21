@@ -1,9 +1,11 @@
 package learners;
 
-import attributes.Attributes;
+import com.zachjones.languageclassifier.attribute.Attribute;
+import com.zachjones.languageclassifier.entities.LanguageDecision;
+import com.zachjones.languageclassifier.model.types.Language;
 import helper.Pair;
 import helper.WeightedList;
-import helper.MultiLanguageDecision;
+import com.zachjones.languageclassifier.entities.MultiLanguageDecision;
 import com.zachjones.languageclassifier.entities.InputRow;
 
 import java.util.Set;
@@ -11,27 +13,22 @@ import java.util.stream.Collectors;
 
 public class Adaboost implements Decider {
 
-	/** The languages to split between. */
-	private final String languageOne, languageTwo;
-
-	/** weighted inputs and hypotheses used in learning.
+    /** weighted inputs and hypotheses used in learning.
 	 * These weights change as we go through. */
 	private WeightedList<InputRow> inputs;
 
 	/** This one is the weights according to the correct % of each hypothesis.
 	 * We need to keep this not normalized and then do the normalization at the end of each iteration. */
-	private WeightedList<Decider> hypotheses;
+	private final WeightedList<Decider> hypotheses;
 
 	/** This list will always be a normalized list of the individual stumps. */
 	private WeightedList<Decider> normalizedHypotheses;
 
 	/** Private constructor to create an Adaboost ensemble */
-	private Adaboost(WeightedList<InputRow> input, String languageOne, String languageTwo) {
+	private Adaboost(WeightedList<InputRow> input) {
 		hypotheses = new WeightedList<>();
 		this.inputs = input;
-		this.languageOne = languageOne;
-		this.languageTwo = languageTwo;
-	}
+    }
 
 	/** Learns using the Adaboost technique on decision stumps.
 	 * This learns a binary classifier between the two languages.
@@ -41,10 +38,10 @@ public class Adaboost implements Decider {
 	 * @param languageOne The first language of the inputs
 	 * @param languageTwo The second language of the inputs
 	 */
-	static Decider learn(WeightedList<InputRow> inputs, int ensembleSize, Set<Attributes> attributes,
-						 String languageOne, String languageTwo) {
+	static Decider learn(WeightedList<InputRow> inputs, int ensembleSize, Set<Attribute> attributes,
+						 Language languageOne, Language languageTwo) {
 
-		Adaboost result = new Adaboost(inputs, languageOne, languageTwo);
+		Adaboost result = new Adaboost(inputs);
 		int totalSize = inputs.size();
 
 		for (int i = 0; i < ensembleSize; i++) {
@@ -54,7 +51,7 @@ public class Adaboost implements Decider {
 			double error = 0.0;
 			for (int j = 0; j < inputs.size(); j++) {
 				Pair<Double, InputRow> row = inputs.get(j); // weight, example
-				if (!newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.getOutputValue())) {
+				if (!newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.getLanguage())) {
 					error += row.one;
 				}
 			}
@@ -70,7 +67,7 @@ public class Adaboost implements Decider {
 			double reductionRate = error / (1 - error);
 			for (int j = 0; j < result.inputs.size(); j++) {
 				Pair<Double, InputRow> row = result.inputs.get(j);
-				if (newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.getOutputValue())) {
+				if (newHypothesis.decide(row.two).mostConfidentLanguage().equals(row.two.getLanguage())) {
 					result.inputs.setWeight(j, result.inputs.getWeight(j) * reductionRate);
 				}
 			}

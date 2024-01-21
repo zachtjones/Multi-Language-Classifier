@@ -29,10 +29,11 @@ dependencies {
 	implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	// implementation("com.amazonaws:aws-lambda-java-events:2.2.7")
-	implementation("org.json:json:20230227")
-	//implementation("com.amazonaws.serverless:aws-serverless-java-container-springboot3:2.0.0-M2")
+	implementation("org.json:json:20231013")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("io.kotest:kotest-assertions-core-jvm:5.8.0")
+	testImplementation("io.kotest:kotest-assertions-core:5.8.0")
 }
 
 tasks.withType<KotlinCompile> {

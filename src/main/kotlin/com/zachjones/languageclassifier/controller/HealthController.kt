@@ -1,11 +1,11 @@
-package com.zachjones.languageclassifier
+package com.zachjones.languageclassifier.controller
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class TestController {
+class HealthController {
 
     @GetMapping("/health")
     fun health() = ResponseEntity.ok("Health Check OK")

@@ -5,23 +5,24 @@ import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import com.zachjones.languageclassifier.model.DgsConstants
-import com.zachjones.languageclassifier.model.types.DownloadTrainingDataInput
+import com.zachjones.languageclassifier.model.types.CreateTrainingDataInput
 import com.zachjones.languageclassifier.model.types.TrainingData
 import com.zachjones.languageclassifier.model.types.TrainingDataResult
 import com.zachjones.languageclassifier.service.TrainingDataService
 
 @DgsComponent
-class DownloadTrainingDataFetcher(
+class TrainingDataFetcher(
     private val trainingDataService: TrainingDataService
 ) {
-    @DgsMutation(field = DgsConstants.MUTATION.DownloadTrainingData)
-    fun downloadTrainingData(@InputArgument input: DownloadTrainingDataInput): TrainingData {
-        // TODO - mutex on this to prevent too many requests
+    @DgsMutation(field = DgsConstants.MUTATION.CreateTrainingData)
+    fun createTrainingData(@InputArgument input: CreateTrainingDataInput): TrainingData {
         val phrasesPerLanguage = input.numberOfPhrasesInEachLanguage
-        require(phrasesPerLanguage in 10..1000) {
-            "numberOfPhrasesInEachLanguage should be between 10 and 1000 (inclusive)"
+        // files are each only 10k lines, so we won't want to do more than 2k to avoid all
+        // data files looking the same
+        require(phrasesPerLanguage in 10..2_000) {
+            "numberOfPhrasesInEachLanguage should be between 10 and 2_000 (inclusive)"
         }
-        return trainingDataService.downloadTrainingData(phrasesPerLanguage)
+        return trainingDataService.createTrainingData(phrasesPerLanguage)
     }
 
     @DgsQuery(field = DgsConstants.QUERY.TrainingData)

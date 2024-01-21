@@ -1,17 +1,46 @@
 # Multi-Language-Classifier
 
-Requires Java 9+
+This project trains an ML model on which language a sentence is based on the input date (located in /src/main/resources/data/odyssey*.txt).
 
-The goal of this is to combine a lot of the various techniques in machine learning, 
-some of which I have learned in detail in my classes, and some of these have just been touched upon.
+Detects the following:
+* English
+* French
+* German
+* Spanish
+* Swedish
 
-The techniques I'm going to explore:
-  - genetic algorithms, used in feature selection
-  - decision trees (detailed in class), a basic method of determining, but works for multiple output values
-  - boosting, specifically adaboost (detailed in class), a method of weighting other learning algorithms and inputs to learn better
-  - neural networks (parts are detailed, parts are not)
-  
-Feature selection:
+These languages were chosen because they all share the Latin/Roman character set,
+so there is some skill involved in knowing what language the sentence is.
+
+"The Odyssey" was chosen as input data as it is in the public domain and it a fairly large text. 
+
+## Setup
+This project is the backend for a language classification API, and related API's.
+
+This is written using:
+* Kotlin (for the JVM)
+  * requires Java 17+
+* Spring Boot
+* Netflix DGS (GraphQL framework for Spring)
+
+To use in an IDE, import using gradle and set it to use java 17+
+
+## Background: Artificial Intelligence / Machine Learning
+
+I've learned some techniques in college but did not go very in depth. This project showcases a lot more depth.
+
+* Data refining and pre-processing
+  * I downloaded 5 different language translations of *The Odyssey* by Homer from the internet.
+  * Many regex operations were used to get them into paragraph form.
+* I am familiar with machine learning techniques:
+  * genetic algorithms -- I use this to determine what "features" distinguish two languages
+  * decision trees -- a simple way to have an algorithm "learn" how to use these features to distinguish two langauges
+  * boosting techniques -- I use adaboost to improve the accuracy and reduce "overfitting" of the training data 
+* I have extensive backend & cloud expertise
+  * you can demo this on https://www.zach-jones.com/ - under the "Language Classifier" section
+  * built using AWS and the technologies listed in the setup.
+
+### Feature selection:
   - specific words (the, a, an, and their equivalents)
     - mutation: pick a new word, given the entire list of words, with the proportional probability to the word count
     - crossover: blends don't make sense, so just return one of the parents
@@ -26,76 +55,38 @@ Feature selection:
     - mutation: one letter changes according to the distribution of letters
     - crossover: the 4 combinations of two letter combinations
   
-Multiple classification:
+### Multiple classification:
   - since there's many languages to decide between, I'm going to use binary classifiers in a one vs one approach.
   - requires training `K (K − 1) / 2` binary classifiers, and then taking the number of +1 votes on each classification, the one with the max is the language decided.
 
-What to learn:
-  - figure out which language a phrase is, learning from examples from wikipedia's random page links.
-  
-The languages I'm going to try to classify:
-  - Albanian
-  - Croatian
-  - Czech
-  - Danish
-  - Dutch
-  - English
-  - French
-  - Gaelic (Scottish)
-  - German
-  - Hawaiian
-  - Icelandic
-  - Italian
-  - Romanian
-  - Samoan
-  - Spanish
-  
-These languages are strategically chosen:
-  - They all have latin characters
-     - Distinguishing between languages with different character sets is trivial
-  - All have wikipedia pages with "Random Article" links, which I can scrape for examples
-     - I really only know English and a very small amount of Spanish.
+
+## Results
+
+trainModel(input: {
+trainingDataId: "1cd98469-5366-48c9-b837-438ca8ba042c",
+attributeGenerations: 100,
+attributePoolSize: 200,
+modelType: ADAPTIVE_BOOSTING_TREE,
+ensembleSize: 20
 
 
-Given a phrase in one of the languages below, the program can detect and correctly classify the language, using machine learning techniques on training data.
+result is "trainingAccuracyPercentage": 72.21
+
+Binary classifier training accuracy (GERMAN vs SWEDISH): 87.52499999999999
+Binary classifier training accuracy (ENGLISH vs GERMAN): 94.525
+Binary classifier training accuracy (FRENCH vs SWEDISH): 99.325
+Binary classifier training accuracy (FRENCH vs GERMAN): 98.75
+Binary classifier training accuracy (ENGLISH vs SWEDISH): 98.925
+Binary classifier training accuracy (FRENCH vs SPANISH): 96.75
+Binary classifier training accuracy (SPANISH vs SWEDISH): 99.775
+Binary classifier training accuracy (GERMAN vs SPANISH): 99.15
+Binary classifier training accuracy (ENGLISH vs FRENCH): 92.475
+Binary classifier training accuracy (ENGLISH vs SPANISH): 99.625
+
+Some languages get more love than others, since they use a common pool of attributes.
 
 
-## Tasks left to implement
-
-  - Neural network learning
-    - using linear combinations at each node (result = a + bx + cy + dz + ..., where a-... are learned weights)
-    - customize the amount of hidden layers (0+) and the number of nodes per hidden layer
-    - might decide to do a different way of the multi-classification
-
-
-## Results - Decision Tree
-
-![results graph](accuracy.png)
-
-The above graph shows the Decision Tree accuracy vs depth.
-
-Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
-with varying tree depth (1-10).
-
-The above shows that the testing accuracy peaks at 95.9%.
-
-Overfitting starts to play a part once the depth of the trees exceeds 6.
-
-Each iteration of the training took around 12 seconds on my 4 core computer.
-
-## Result - Adaptive Boosting
-
-![Adaptive boosting graph](boosting.png)
-
-The above graph shows the Adaptive Boosting accuracy vs ensemble size.
-
-Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
-with varying ensemble size (1-15).
-
-The above shows that the testing accuracy peaks at 97.2%, with 10 decision stumps in the ensemble.
-
-Each iteration of training took around 14 seconds, with the time only slightly increasing
-with larger ensemble sizes. The attribute learning took much of the time.
+Will be iterating on the methods used to try to improve this number
 
 ## Building the JAR
 

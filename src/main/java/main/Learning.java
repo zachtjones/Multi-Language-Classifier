@@ -44,22 +44,6 @@ public class Learning {
 	/** Holds a list of all the languages. */
 	public final static List<String> languages = getLanguageUrls().stream().map(i -> i.one).collect(Collectors.toList());
 
-	/***
-	 * Holds all the pairs of languages that could be used, but in alphabetical order for the languages.
-	 */
-	public final static List<Pair<String, String>> languagePairs;
-	static {
-		languagePairs = new ArrayList<>();
-		// obtain pairwise attributes that are good to split by
-		for (int i = 0; i < languages.size(); i++) {
-			String firstLanguage = languages.get(i);
-			for (int j = i + 1; j < languages.size(); j++) {
-				String secondLanguage = languages.get(j);
-				languagePairs.add(new Pair<>(firstLanguage, secondLanguage));
-			}
-		}
-	}
-
 	/** Creates a string of length numSpaces comprised of spaces. */
 	public static String numSpaces(int numSpaces) {
 		return new String(new char[numSpaces]).replace('\0', ' ');

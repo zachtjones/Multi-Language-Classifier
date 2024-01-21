@@ -1,6 +1,8 @@
 package learners;
 
 import com.zachjones.languageclassifier.entities.InputRow;
+import com.zachjones.languageclassifier.entities.LanguageDecision;
+import com.zachjones.languageclassifier.model.types.Language;
 
 /***
  * Represents a decider with a percentage of confidence known that is not 0 or 1.
@@ -8,7 +10,7 @@ import com.zachjones.languageclassifier.entities.InputRow;
  */
 public class ConfidenceDecider extends LanguageDecision implements Decider {
 
-    private final String languageOne, languageTwo;
+    private final Language languageOne, languageTwo;
     private final double fractionOne;
 
     /**
@@ -17,7 +19,7 @@ public class ConfidenceDecider extends LanguageDecision implements Decider {
      * @param languageTwo The second language
      * @param fractionOne The fraction that is the first language (in range [0.0, 1.0])
      */
-    public ConfidenceDecider(String languageOne, String languageTwo, double fractionOne) {
+    public ConfidenceDecider(Language languageOne, Language languageTwo, double fractionOne) {
         this.languageOne = languageOne;
         this.languageTwo = languageTwo;
         this.fractionOne = fractionOne;
@@ -37,7 +39,7 @@ public class ConfidenceDecider extends LanguageDecision implements Decider {
     }
 
     @Override
-    public double confidenceForLanguage(String language) {
+    public double confidenceForLanguage(Language language) {
         if (language.equals(languageOne)) {
             return fractionOne;
         } else if (language.equals(languageTwo)){
@@ -48,7 +50,7 @@ public class ConfidenceDecider extends LanguageDecision implements Decider {
     }
 
     @Override
-    public String mostConfidentLanguage() {
+    public Language mostConfidentLanguage() {
         return fractionOne > 0.5 ? languageOne : languageTwo;
     }
 }

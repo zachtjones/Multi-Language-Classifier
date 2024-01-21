@@ -7,7 +7,7 @@ server:
     #max-connections: 2400
     accesslog:
       enabled: true
-      pattern: "%{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}t [TomcatAccessLog] x_forwarded_for=\"%{X-Forwarded-For}i\" http_method=%m http_url=%U http_protocol=%H http_status=%s http_exec_time=%D user_agent=\"%{user-agent}i\""
+      pattern: "%{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}t [TomcatAccessLog] origin=\"%{origin}i\" sec-fetch-mode=%{sec-fetch-mode}i sec-fetch-site=%{sec-fetch-site}i http_method=%m http_url=%U http_protocol=%H http_status=%s http_exec_time=%D user_agent=\"%{user-agent}i\""
       buffered: false
       rotate: false
       # Log to stdout by setting the directory, prefix, suffix and file-date-format.
@@ -18,3 +18,9 @@ server:
 #    threads:
 #      max: 2400
 #      min-spare: 20
+
+allowedOrigins:
+  - "https://www.zach-jones.com"
+  - "https://zach-jones.com"
+  - "http://localhost:3000"
+  - "electron://altair" # graphql IDE I use
