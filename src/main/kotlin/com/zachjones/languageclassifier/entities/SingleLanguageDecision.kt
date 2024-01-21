@@ -9,9 +9,7 @@ class SingleLanguageDecision private constructor(
         private val language: Language
 ) : LanguageDecision() {
 
-    override fun confidenceForLanguage(language: Language): Double = if (this.language == language) 1.0 else 0.0
-
-    override fun mostConfidentLanguage(): Language = this.language
+    override fun confidences(): Map<Language, Double> = mapOf(this.language to 1.0)
 
     companion object {
         private val decisions = EnumMap<Language, SingleLanguageDecision>(Language::class.java).also { map ->

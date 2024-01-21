@@ -1,51 +1,42 @@
 package com.zachjones.languageclassifier.entities
 
 import com.zachjones.languageclassifier.model.types.Language
-import java.util.EnumMap
 
 /***
  * Represents a language decision where there's multiple languages or multiple weighted
  * parts in each decision.
  */
-class MultiLanguageDecision : LanguageDecision() {
-    private val chances = EnumMap<Language, Double>(Language::class.java)
-
-
-    /** Adds weight to the specified language.  */
-    private fun addWeightTo(language: Language, weight: Double) {
-        // insert into the map if not already there
-        if (!chances.containsKey(language)) chances[language] = 0.0
-
-        // add on the weight
-        chances[language] = chances[language]!! + weight
-    }
-
-    /**
-     * Adds the weight to the overall language decision, with this decision playing
-     * just a fraction of the overall decision.
-     * @param decide The language decision for the part.
-     * @param weight The relative weight of this part's decision.
-     */
-    @JvmOverloads
-    fun addWeightTo(decide: LanguageDecision, weight: Double = 1.0) {
-        for (language in Language.values()) {
-            addWeightTo(language, decide.confidenceForLanguage(language) * weight)
-        }
-    }
+data class MultiLanguageDecision(
+    val weights: Map<Language, Double>
+) : LanguageDecision() {
 
     /**
      * Normalizes the weights so that the sum is 1.0
      */
-    fun normalize() {
-        val totalWeight = chances.values.stream().mapToDouble { i: Double? -> i!! }.sum()
-        for (key in chances.keys) {
-            chances[key] = chances[key]!! / totalWeight
+    fun normalized(): MultiLanguageDecision {
+        val totalWeight = weights.values.sum()
+        return MultiLanguageDecision(weights = weights.mapValues { (_, value) ->
+            value / totalWeight
+        })
+    }
+
+    override fun confidences(): Map<Language, Double> = weights
+
+    companion object {
+        fun of(decisions: List<LanguageDecision>): MultiLanguageDecision {
+            val map = mutableMapOf<Language, Double>()
+            Language.values().forEach {
+                map[it] = 0.0
+            }
+            decisions.forEach { decision ->
+                decision.confidences().map { (language, confidence) ->
+                    map[language] = map[language]!! + confidence
+                }
+            }
+            // remove all the "votes" for other, and let the majority language win
+            map[Language.OTHER] = 0.0
+            return MultiLanguageDecision(map).normalized()
         }
     }
-
-    override fun confidenceForLanguage(language: Language): Double = chances[language] ?: 0.0
-
-    override fun mostConfidentLanguage(): Language {
-        return Language.values().maxBy { this.confidenceForLanguage(it) }
-    }
 }
+

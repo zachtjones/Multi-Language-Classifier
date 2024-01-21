@@ -51,7 +51,7 @@ class TrainingDataService(
         val id = UUID.randomUUID().toString()
         logger.info("Creating training data id=$id with $phrasesPerLanguage phrases per language")
 
-        val input: List<InputRow> = Language.values().flatMap { language ->
+        val input: List<InputRow> = Language.values().filter { it != Language.OTHER }.flatMap { language ->
             createInputRows(language, phrasesPerLanguage).also {
                 logger.info("Created training data for: $language")
             }

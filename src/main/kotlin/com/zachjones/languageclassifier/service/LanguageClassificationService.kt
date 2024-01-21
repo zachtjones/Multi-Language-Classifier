@@ -26,7 +26,7 @@ class LanguageClassificationService(
             probabilities = Language.values().map {
                 LanguageProbability(
                     language = it,
-                    percentageLikely = decision.confidenceForLanguage(it) * 100
+                    percentageLikely = (decision.confidences()[it] ?: 0.0) * 100
                 )
             }.sortedByDescending { it.percentageLikely }
         )

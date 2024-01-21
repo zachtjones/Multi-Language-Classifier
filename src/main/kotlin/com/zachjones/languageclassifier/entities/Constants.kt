@@ -13,3 +13,6 @@ val WORD_SPLIT_REGEX = Regex("[\\-()*&^%$#@!,./?\";:+«»‘\\[\\]{}=_\\\\|\u821
 
 
 fun poemSourceFile(language: Language) = "${DATA_PATH}odyssey-${language.name.lowercase()}.txt"
+
+/** Creates a string of length this comprised of spaces.  */
+fun Int.spaces(): String = " ".repeat(this)

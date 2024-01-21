@@ -4,6 +4,7 @@ import com.zachjones.languageclassifier.entities.DATA_PATH
 import com.zachjones.languageclassifier.model.types.Language
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -15,8 +16,7 @@ import kotlin.io.path.deleteRecursively
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TrainingDataServiceTest {
-    private val objectMapper = FileOperationService().objectMapper()
-    private val trainingDataService = TrainingDataService(objectMapper)
+    private val trainingDataService = TrainingDataService(FileOperationService())
 
     @OptIn(ExperimentalPathApi::class)
     @BeforeAll
@@ -36,6 +36,7 @@ class TrainingDataServiceTest {
         // load it
         val trainingData = trainingDataService.getTrainingDataSet(result.id)
         trainingData.forEach { it.language.shouldNotBeNull() }
-        trainingData.size shouldBe Language.values().size * 10
+        trainingData.forEach { it.language shouldNotBe Language.OTHER }
+        trainingData.size shouldBe 50
     }
 }

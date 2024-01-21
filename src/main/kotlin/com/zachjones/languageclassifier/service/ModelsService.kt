@@ -1,14 +1,14 @@
 package com.zachjones.languageclassifier.service
 
 import com.zachjones.languageclassifier.LanguageClassifierProperties
+import com.zachjones.languageclassifier.core.Decider
+import com.zachjones.languageclassifier.core.MultiClassifier
 import com.zachjones.languageclassifier.entities.DATA_PATH
 import com.zachjones.languageclassifier.entities.InputRow
 import com.zachjones.languageclassifier.entities.MODEL_PREFIX
 import com.zachjones.languageclassifier.entities.MODEL_SUFFIX
 import com.zachjones.languageclassifier.model.types.ModelType
 import com.zachjones.languageclassifier.model.types.TrainedModel
-import learners.Decider
-import learners.MultiClassifier
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.nio.file.Files
@@ -59,8 +59,7 @@ class ModelsService(
             trainingData,
             treeDepth,
             attributeGenerations,
-            attributePoolSize,
-            true
+            attributePoolSize
         )
 
         return saveAndEvaluateModel(modelId, model, trainingData)
@@ -80,7 +79,6 @@ class ModelsService(
             ensembleSize,
             attributeGenerations,
             attributePoolSize,
-            true
         )
         return saveAndEvaluateModel(modelId, model, trainingData)
     }

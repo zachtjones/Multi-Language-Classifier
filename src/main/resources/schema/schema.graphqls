@@ -92,4 +92,5 @@ enum Language {
     GERMAN
     SPANISH
     SWEDISH
+    OTHER # used internally to train binary classifiers
 }
