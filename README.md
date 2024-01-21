@@ -25,7 +25,7 @@ This is written using:
 
 To use in an IDE, import using gradle and set it to use java 17+
 
-## Artificial Intelligence / Machine Learning
+## Background: Artificial Intelligence / Machine Learning
 
 I've learned some techniques in college but did not go very in depth. This project showcases a lot more depth.
 
@@ -60,37 +60,33 @@ I've learned some techniques in college but did not go very in depth. This proje
   - requires training `K (K − 1) / 2` binary classifiers, and then taking the number of +1 votes on each classification, the one with the max is the language decided.
 
 
+## Results
 
-# TODO - the rest will need to be updated based on new model performance
+trainModel(input: {
+trainingDataId: "1cd98469-5366-48c9-b837-438ca8ba042c",
+attributeGenerations: 100,
+attributePoolSize: 200,
+modelType: ADAPTIVE_BOOSTING_TREE,
+ensembleSize: 20
 
-## Results - Decision Tree
 
-![results graph](accuracy.png)
+result is "trainingAccuracyPercentage": 72.21
 
-The above graph shows the Decision Tree accuracy vs depth.
+Binary classifier training accuracy (GERMAN vs SWEDISH): 87.52499999999999
+Binary classifier training accuracy (ENGLISH vs GERMAN): 94.525
+Binary classifier training accuracy (FRENCH vs SWEDISH): 99.325
+Binary classifier training accuracy (FRENCH vs GERMAN): 98.75
+Binary classifier training accuracy (ENGLISH vs SWEDISH): 98.925
+Binary classifier training accuracy (FRENCH vs SPANISH): 96.75
+Binary classifier training accuracy (SPANISH vs SWEDISH): 99.775
+Binary classifier training accuracy (GERMAN vs SPANISH): 99.15
+Binary classifier training accuracy (ENGLISH vs FRENCH): 92.475
+Binary classifier training accuracy (ENGLISH vs SPANISH): 99.625
 
-Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
-with varying tree depth (1-10).
+Some languages get more love than others, since they use a common pool of attributes.
 
-The above shows that the testing accuracy peaks at 95.9%.
 
-Overfitting starts to play a part once the depth of the trees exceeds 6.
-
-Each iteration of the training took around 12 seconds on my 4 core computer.
-
-## Result - Adaptive Boosting
-
-![Adaptive boosting graph](boosting.png)
-
-The above graph shows the Adaptive Boosting accuracy vs ensemble size.
-
-Parameters used: examplesFile=training.txt testingFile=testing.txt numberGenerations=75 poolSize=20,
-with varying ensemble size (1-15).
-
-The above shows that the testing accuracy peaks at 97.2%, with 10 decision stumps in the ensemble.
-
-Each iteration of training took around 14 seconds, with the time only slightly increasing
-with larger ensemble sizes. The attribute learning took much of the time.
+Will be iterating on the methods used to try to improve this number
 
 ## Building the JAR
 

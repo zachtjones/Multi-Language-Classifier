@@ -30,7 +30,7 @@ class TrainingDataService(
         }.toList()
         val trainingData = files.map {
             val id = it.name.removePrefix(TRAINING_DATA_PREFIX).removeSuffix(TRAINING_DATA_SUFFIX)
-            val trainingData = fileOperationService.readFile<List<InputRow>>(getFileName(id))
+            val trainingData = fileOperationService.readJsonFile<List<InputRow>>(getFileName(id))
             return@map id to trainingData
         }.associate { it.first to it.second }
         loadedData += trainingData
@@ -57,7 +57,7 @@ class TrainingDataService(
             }
         }
 
-        fileOperationService.writeFile(getFileName(id), input)
+        fileOperationService.writeJsonFile(getFileName(id), input)
 
         loadedData[id] = input
         val newMetaData = TrainingData(
