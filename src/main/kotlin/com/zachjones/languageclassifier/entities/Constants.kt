@@ -16,3 +16,5 @@ fun poemSourceFile(language: Language) = "${DATA_PATH}odyssey-${language.name.lo
 
 /** Creates a string of length this comprised of spaces.  */
 fun Int.spaces(): String = " ".repeat(this)
+
+fun List<InputRow>.averageWordCount(): Double = this.map { it.words.size.toDouble() }.average()

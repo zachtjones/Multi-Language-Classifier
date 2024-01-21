@@ -62,31 +62,104 @@ I've learned some techniques in college but did not go very in depth. This proje
 
 ## Results
 
-trainModel(input: {
-trainingDataId: "1cd98469-5366-48c9-b837-438ca8ba042c",
-attributeGenerations: 100,
-attributePoolSize: 200,
-modelType: ADAPTIVE_BOOSTING_TREE,
-ensembleSize: 20
+All of these results are based on a series of models trained based on:
+* Training data ID: 1cd98469-5366-48c9-b837-438ca8ba042c
+* Testing data ID: 35f4fd52-959d-4828-86d6-2193d4e22844
+* Computer resources: Apple Macbook Pro 2021 w/ M1 Max
+
+Note: training is run using multithreading, and will use up to the number of languages cores (5).
+
+### Decision Trees
 
 
-result is "trainingAccuracyPercentage": 72.21
-
-Binary classifier training accuracy (GERMAN vs SWEDISH): 87.52499999999999
-Binary classifier training accuracy (ENGLISH vs GERMAN): 94.525
-Binary classifier training accuracy (FRENCH vs SWEDISH): 99.325
-Binary classifier training accuracy (FRENCH vs GERMAN): 98.75
-Binary classifier training accuracy (ENGLISH vs SWEDISH): 98.925
-Binary classifier training accuracy (FRENCH vs SPANISH): 96.75
-Binary classifier training accuracy (SPANISH vs SWEDISH): 99.775
-Binary classifier training accuracy (GERMAN vs SPANISH): 99.15
-Binary classifier training accuracy (ENGLISH vs FRENCH): 92.475
-Binary classifier training accuracy (ENGLISH vs SPANISH): 99.625
-
-Some languages get more love than others, since they use a common pool of attributes.
+### Adaptive Boosting
 
 
-Will be iterating on the methods used to try to improve this number
+#### Iterating on the pool + generation size
+
+| Attribute Pool Size | Attribute Generations | Ensemble Size | Time (s) | Training Accuracy | Testing Accuracy |
+|---------------------|-----------------------|---------------|----------|-------------------|------------------|
+| 40                  | 5                     | 5             | 1.26     | 59.63             | 60.02            |
+| 40                  | 5                     | 6             | 1.07     | 84.23             | 83.7             |
+| 40                  | 5                     | 7             | 1.17     | 84.49             | 84.56            |
+| 40                  | 5                     | 8             | 1.29     | 86.11             | 85.90            |
+| 40                  | 5                     | 9             | 1.29     | 82.89             | 82.59            |
+| 40                  | 5                     | 10            | 1.34     | 69.12             | 69.46            |
+| 40                  | 5                     | 12            | 1.55     | 83.27             | 83.21            |
+| 40                  | 5                     | 15            | 1.73     | 75.88             | 75.12            |
+| 40                  | 5                     | 20            | 2.06     | 85.99             | 85.24            | 
+| 40                  | 5                     | 25            | 2.29     | 82.92             | 82.61            |
+| 40                  | 5                     | 30            | 2.94     | 77.40             | 77.86            |
+| 40                  | 5                     | 35            | 3.21     | 57.92             | 57.78            |
+| 40                  | 5                     | 40            | 3.14     | 57.81             | 57.76            |
+
+![Attribute Generations](images/pool40-gen5.png)
+
+With small attribute generations, the optimal ensemble size is around 20, or around 1/2 the attributes.
+
+
+Repeating the same with Attribute Generations=40
+
+| Attribute Pool Size | Attribute Generations | Ensemble Size | Time (s) | Training Accuracy | Testing Accuracy |
+|---------------------|-----------------------|---------------|----------|-------------------|------------------|
+| 40                  | 40                    | 5             | 1.82     | 86.72             | 87.3             |
+| 40                  | 40                    | 6             | 1.95     | 85.48             | 85.76            |
+| 40                  | 40                    | 7             | 2.03     | 83.80             | 83.85            | 
+| 40                  | 40                    | 8             | 2.14     | 87.08             | 87.36            |
+| 40                  | 40                    | 9             | 2.22     | 89.69             | 89.74            |
+| 40                  | 40                    | 10            | 2.32     | 81.46             | 81.45            |
+| 40                  | 40                    | 12            | 2.48     | 85.98             | 85.55            |
+| 40                  | 40                    | 15            | 2.66     | 88.54             | 88.04            |
+| 40                  | 40                    | 20            | 3.10     | 82.90             | 82.30            |
+| 40                  | 40                    | 25            | 3.58     | 78.00             | 77.94            |
+| 40                  | 40                    | 30            | 3.99     | 79.47             | 78.69            |
+| 40                  | 40                    | 35            | 4.42     | 82.27             | 81.98            |
+| 40                  | 40                    | 40            | 4.73     | 79.07             | 78.97            |
+
+![Attribute Generations](images/pool40-gen40.png)
+
+With the same y-axis, we can see that larger number of generations will yield more consistent results.
+
+The training did take a few seconds longer, but overall it was still super fast (< 5 seconds).
+
+From this the best accuracy happens when the ensemble size is around 1/4 the pool size of 40.
+
+Let's set that ratio, and see what happens. 
+I've increased the attribute generations since it smoothens out the data, though it does increase the training time.
+
+| Attribute Pool Size | Attribute Generations | Ensemble Size | Time (s) | Training Accuracy | Testing Accuracy |
+|---------------------|-----------------------|---------------|----------|-------------------|------------------|
+| 20                  | 100                   | 5             | 2.07     | 75.64             | 74.85            |
+| 24                  | 100                   | 6             | 2.40     | 80.82             | 80.46            |
+| 28                  | 100                   | 7             | 2.97     | 83.34             | 83.19            |
+| 32                  | 100                   | 8             | 3.08     | 83.69             | 83.00            |
+| 36                  | 100                   | 9             | 3.46     | 83.21             | 83.23            |
+| 40                  | 100                   | 10            | 3.77     | 87.64             | 87.55            |
+| 48                  | 100                   | 12            | 4.56     | 77.03             | 76.97            |
+| 60                  | 100                   | 15            | 6.14     | 89.28             | 88.82            |
+| **80**              | **100**               | **20**        | **8.31** | **90.93**         | **89.99**        |
+| 100                 | 100                   | 25            | 11.32    | 87.51             | 87.28            |
+| 120                 | 100                   | 30            | 14.54    | 88.90             | 88.81            |
+| 140                 | 100                   | 35            | 18.19    | 88.25             | 87.79            |
+| 160                 | 100                   | 40            | 21.84    | 89.54             | 89.05            |
+
+![Attribute Generations](images/pool4x-gen100.png)
+
+Hypothesis: giving the model training the most data possible via a huge attribute pool will result in higher accuracy.
+
+| Attribute Pool Size | Attribute Generations | Ensemble Size | Time (s)  | Training Accuracy | Testing Accuracy |
+|---------------------|-----------------------|---------------|-----------|-------------------|------------------|
+| 500                 | 100                   | 18            | 40.49     | 93.65             | 93.02            |
+| 500                 | 100                   | 19            | 41.61     | 94.80             | 94.41            |
+| **500**             | **100**               | **20**        | **41.93** | **96.83**         | **96.52**        |
+| 500                 | 100                   | 21            | 43.17     | 95.35             | 94.93            |
+| 500                 | 100                   | 22            | 44.76     | 91.09             | 90.14            |
+| 500                 | 100                   | 25            | 47.43     | 90.97             | 90.85            |
+| 500                 | 100                   | 30            | 52.06     | 88.87             | 87.97            |
+| 1000                | 200                   | 20            | 135.29    | 94.00             | 93.40            |  
+
+The best model was created with 500 attributes, 100 generations, and an ensemble size of 20.
+
 
 ## Building the JAR
 

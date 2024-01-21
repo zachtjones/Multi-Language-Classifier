@@ -5,6 +5,7 @@ import com.zachjones.languageclassifier.entities.LanguageDecision
 import com.zachjones.languageclassifier.entities.MultiLanguageDecision
 import com.zachjones.languageclassifier.entities.WeightedList
 import com.zachjones.languageclassifier.model.types.Language
+import com.zachjones.languageclassifier.model.types.ModelType
 import java.io.Serializable
 import java.util.stream.Collectors
 
@@ -39,7 +40,7 @@ class MultiClassifier private constructor(
             rows: List<InputRow>, depth: Int,
             numberGenerations: Int, poolSize: Int
         ): MultiClassifier {
-            return learn(rows, "decision", numberGenerations, poolSize, depth)
+            return learn(rows, ModelType.DECISION_TREE, numberGenerations, poolSize, depth)
         }
 
         /**
@@ -55,19 +56,19 @@ class MultiClassifier private constructor(
             rows: List<InputRow>, ensembleSize: Int,
             numberGenerations: Int, poolSize: Int
         ): MultiClassifier {
-            return learn(rows, "ada", numberGenerations, poolSize, ensembleSize)
+            return learn(rows, ModelType.ADAPTIVE_BOOSTING_TREE, numberGenerations, poolSize, ensembleSize)
         }
 
 
         private fun learn(
-            rows: List<InputRow>, method: String, numberGenerations: Int,
+            rows: List<InputRow>, method: ModelType, numberGenerations: Int,
             poolSize: Int, param: Int
         ): MultiClassifier {
             var description = "Model using " + rows.size +
                     " total phrases, method=" + method +
                     ", attributeGenerations=" + numberGenerations +
                     ", attributePoolSize=" + poolSize
-            description += if (method == "decision") {
+            description += if (method == ModelType.DECISION_TREE) {
                 ", treeDepth=$param"
             } else {
                 ", ensembleSize=$param"
@@ -89,25 +90,26 @@ class MultiClassifier private constructor(
                 val attributes = GeneticLearning.learnAttributes(allExamples, language, Language.OTHER, numberGenerations, poolSize)
 
                 // learn a decision tree based on the attributes, with depth
-                val binaryDecider = if (method == "decision") {
-                    DecisionTree.learn(
-                        allData = WeightedList(allExamples),
-                        levelLeft = param,
-                        optionsLeft = attributes,
-                        totalSize = allExamples.size,
-                        languageOne = language,
-                        languageTwo = Language.OTHER
-                    )
-                } else if (method == "ada") {
-                    Adaboost.learn(
-                        inputs = WeightedList(allExamples),
-                        ensembleSize = param,
-                        attributes = attributes,
-                        languageOne = language,
-                        languageTwo = Language.OTHER
-                    )
-                } else {
-                    throw IllegalArgumentException("Method must be 'ada' or 'decision'.")
+                val binaryDecider = when (method) {
+                    ModelType.DECISION_TREE -> {
+                        DecisionTree.learn(
+                            allData = WeightedList(allExamples),
+                            levelLeft = param,
+                            optionsLeft = attributes,
+                            totalSize = allExamples.size,
+                            languageOne = language,
+                            languageTwo = Language.OTHER
+                        )
+                    }
+                    ModelType.ADAPTIVE_BOOSTING_TREE -> {
+                        Adaboost.learn(
+                            inputs = WeightedList(allExamples),
+                            ensembleSize = param,
+                            attributes = attributes,
+                            languageOne = language,
+                            languageTwo = Language.OTHER
+                        )
+                    }
                 }
 
                 // determine accuracy

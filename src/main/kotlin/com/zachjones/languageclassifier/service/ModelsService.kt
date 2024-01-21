@@ -37,7 +37,8 @@ class ModelsService(
             TrainedModel(
                 modelId = id,
                 description = model.description,
-                trainingAccuracyPercentage = -1.0 // TODO - also persist this data
+                trainingAccuracyPercentage = -1.0, // TODO - also persist this data
+                testingAccuracyPercentage = -1.0 // also persist this data
             )
         }
         loadedModelsMetadata += modelMetadata
@@ -47,6 +48,7 @@ class ModelsService(
 
     fun trainDecisionTreeModel(
         trainingData: List<InputRow>,
+        testingData: List<InputRow>,
         attributeGenerations: Int,
         attributePoolSize: Int,
         treeDepth: Int
@@ -62,11 +64,17 @@ class ModelsService(
             attributePoolSize
         )
 
-        return saveAndEvaluateModel(modelId, model, trainingData)
+        return saveAndEvaluateModel(
+            modelId = modelId,
+            model = model,
+            trainingData = trainingData,
+            testingData = testingData
+        )
     }
 
     fun trainAdaptiveBoostingModel(
         trainingData: List<InputRow>,
+        testingData: List<InputRow>,
         attributeGenerations: Int,
         attributePoolSize: Int,
         ensembleSize: Int
@@ -80,25 +88,30 @@ class ModelsService(
             attributeGenerations,
             attributePoolSize,
         )
-        return saveAndEvaluateModel(modelId, model, trainingData)
+        return saveAndEvaluateModel(modelId, model, trainingData, testingData)
     }
 
     private fun saveAndEvaluateModel(
         modelId: String,
         model: MultiClassifier,
-        trainingData: List<InputRow>
+        trainingData: List<InputRow>,
+        testingData: List<InputRow>
     ): TrainedModel {
         val learnerFile = "$DATA_PATH$MODEL_PREFIX$modelId$MODEL_SUFFIX"
         model.saveTo(learnerFile)
 
         // evaluate learner
-        val accuracyPercent: Double = 100 * (1 - model.errorRateUnWeighted(trainingData))
-        logger.info("Training accuracy: $accuracyPercent for model $modelId")
+        val trainingAccuracyPercent: Double = 100 * (1 - model.errorRateUnWeighted(trainingData))
+        logger.info("Training accuracy: $trainingAccuracyPercent for model $modelId")
+
+        val testingAccuracyPercent: Double = 100 * (1 - model.errorRateUnWeighted(testingData))
+        logger.info("Testing accuracy: $testingAccuracyPercent for model $modelId")
 
         val trainedModel = TrainedModel(
             modelId = modelId,
             description = model.description,
-            trainingAccuracyPercentage = accuracyPercent
+            trainingAccuracyPercentage = trainingAccuracyPercent,
+            testingAccuracyPercentage = testingAccuracyPercent
         )
         loadedModelsMetadata[modelId] = trainedModel
         return trainedModel

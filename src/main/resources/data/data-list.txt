@@ -4,3 +4,5 @@ odyssey-german.txt
 odyssey-spanish.txt
 odyssey-swedish.txt
 training-1cd98469-5366-48c9-b837-438ca8ba042c.json
+training-35f4fd52-959d-4828-86d6-2193d4e22844.json
+model-029b11ec-e2cd-4799-8c53-a485b8f8e6b7.dat
