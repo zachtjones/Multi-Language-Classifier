@@ -160,8 +160,6 @@ Hypothesis: giving the model training the most data possible via a huge attribut
 
 The best model was created with 500 attributes, 100 generations, and an ensemble size of 20.
 
-# Best models: (500, 100, 20) -> 029b11ec-e2cd-4799-8c53-a485b8f8e6b7
-
 
 ## Building the JAR
 
