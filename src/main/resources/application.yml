@@ -24,3 +24,5 @@ allowedOrigins:
   - "https://zach-jones.com"
   - "http://localhost:3000"
   - "electron://altair" # graphql IDE I use
+
+disableMutations: false

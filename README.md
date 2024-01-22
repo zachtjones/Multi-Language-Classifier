@@ -160,6 +160,60 @@ Hypothesis: giving the model training the most data possible via a huge attribut
 
 The best model was created with 500 attributes, 100 generations, and an ensemble size of 20.
 
+#### What does the model look like:
+
+Models are stored using java's serializable interface but in a pseudocode way they are like:
+```text
+[
+  "English" vs "Other" model
+  "Spanish" vs "Other" model
+  .. for the rest
+]
+```
+Take the one with the highest result when determining the language
+
+Each model is like:
+```json
+[
+  {
+    "weight": 0.0391,
+    "attribute": {
+      "splitOn": "Word contains 'th'",
+      "ifTrue": "English 97.1%, Other 2.9%",
+      "ifFalse": "English 14.1%, Other 85.9%"
+    }
+  },
+  {
+    "weight": 0.03918,
+    "attribute": {
+      "splitOn": "a word is 'and'",
+      "ifTrue": "English 100%, Other 0%",
+      "ifFalse": "English 6.4%, Other 93.6%"
+    }
+  },
+  {
+    "weight": 0.03145,
+    "attribute": {
+      "splitOn": "more 'w' than 'y'",
+      "ifTrue": "English 38.3%, Other 61.7%",
+      "ifFalse": "English 100%, Other 0.0%"
+    }
+  },
+  ...
+]
+```
+
+## Ideas for improvements in the future
+
+* Right now, with adaptive boosting, the same attribute may be picked multiple times. This will result in less accurate models for real phrases.
+* Models store a lot more of the training information than they need, resulting in substantially large (1.6MB) models. Solve by separating the training classes from what needs to be persisted.
+* With any code changes to the model or associated classes, they are not compatible with older model code. Storing the relevant fields as json would solve.
+* Intelligent training vs testing data: do a 80/20 split with no repeats between both sets.
+* Larger input data - 2000 lines per language is about the limit to have few repeats and have separate training vs testing data. 
+* Training larger models takes quite a bit of time.
+  * Execution time is proportional to:
+    * (number of phrases) x (number of attributes) x (number of generations) + (number of attributes) x (model size -- ensemble or 2^depth)
+    * Can I reduce the number of mutations that would yield an attribute that is not good? Caching could solve this since the same attribute can be created multiple times.
 
 ## Building the JAR
 

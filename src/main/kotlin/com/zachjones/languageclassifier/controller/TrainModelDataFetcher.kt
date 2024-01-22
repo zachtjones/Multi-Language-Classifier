@@ -4,6 +4,7 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import com.zachjones.languageclassifier.config.MutationsConfig
 import com.zachjones.languageclassifier.model.DgsConstants
 import com.zachjones.languageclassifier.model.types.ModelType
 import com.zachjones.languageclassifier.model.types.TrainModelInput
@@ -15,11 +16,15 @@ import com.zachjones.languageclassifier.service.TrainingDataService
 @DgsComponent
 class TrainModelDataFetcher(
     private val trainingDataService: TrainingDataService,
-    private val modelsService: ModelsService
+    private val modelsService: ModelsService,
+    private val mutationsConfig: MutationsConfig
 ) {
 
     @DgsMutation(field = DgsConstants.MUTATION.TrainModel)
     fun trainModel(@InputArgument input: TrainModelInput): TrainedModel {
+        require(!mutationsConfig.disableMutations) {
+            "Mutations are disabled"
+        }
 
         val trainingData = trainingDataService.getTrainingDataSet(input.trainingDataId)
         val testingData = trainingDataService.getTrainingDataSet(input.testingDataId)

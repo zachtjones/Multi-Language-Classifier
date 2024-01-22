@@ -2,3 +2,5 @@
 environment: cloud
 server:
   port: 5000
+
+disableMutations: true
