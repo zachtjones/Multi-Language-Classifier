@@ -1,8 +1,10 @@
 # Multi-Language-Classifier
 
-This project trains an ML model on which language a sentence is based on the input date (located in /src/main/resources/data/odyssey*.txt).
+This project trains a ML model to detect the language of phrases.
 
-Detects the following:
+The input data is generated with some pre-processing from Homer's Odyssey, which I have obtained several modern translations and added to this project in `/src/main/resources/data/`.
+
+The translations are in:
 * English
 * French
 * German
@@ -12,16 +14,19 @@ Detects the following:
 These languages were chosen because they all share the Latin/Roman character set,
 so there is some skill involved in knowing what language the sentence is.
 
-"The Odyssey" was chosen as input data as it is in the public domain and it a fairly large text. 
+"The Odyssey" was chosen as input data as it is in the public domain and it's a fairly large text. 
 
 ## Setup
-This project is the backend for a language classification API, and related API's.
+This project requires these to be installed on your machine to run:
+* Gradle
+* Java JDK 17+
 
-This is written using:
-* Kotlin (for the JVM)
-  * requires Java 17+
-* Spring Boot
-* Netflix DGS (GraphQL framework for Spring)
+Tools/Libraries used:
+* Kotlin
+* Spring Boot - used for dependency injection
+* Netflix DGS (domain graph service) - used for GraphQL Layer
+* Jackson - used for JSON parsing
+* KoTest - used in unit tests for their assertion framework
 
 To use in an IDE, import using gradle and set it to use java 17+
 
@@ -56,9 +61,14 @@ I've learned some techniques in college but did not go very in depth. This proje
     - crossover: the 4 combinations of two letter combinations
   
 ### Multiple classification:
-  - since there's many languages to decide between, I'm going to use binary classifiers in a one vs one approach.
-  - requires training `K (K − 1) / 2` binary classifiers, and then taking the number of +1 votes on each classification, the one with the max is the language decided.
-
+  - since there's many languages to decide between, I'm going to use binary classifiers in a one language vs others approach.
+  - train `n` binary classifiers, where each one gets a vote for which language the result is
+  - if the results are:
+    - Enlish 40%, other 60%
+    - Spanish 80%, other 20%
+    - rest of languages all say other 100%
+  - then the result would be:
+    - normalize(80% Spanish, 40% English) ->  66.67% Spanish, 33.33% English
 
 ## Results
 
@@ -71,9 +81,13 @@ Note: training is run using multithreading, and will use up to the number of lan
 
 ### Decision Trees
 
+I have not collected extensive data using purely using decision trees, as early tests showed Adaptive Boosting resulted in better results.
 
 ### Adaptive Boosting
 
+I did several iterations of adaptive boosting, with the goal to get the best model possible.
+
+I started out with some very small models to see how quickly I could iterate on the optimal ensemble size.
 
 #### Iterating on the pool + generation size
 
@@ -82,7 +96,7 @@ Note: training is run using multithreading, and will use up to the number of lan
 | 40                  | 5                     | 5             | 1.26     | 59.63             | 60.02            |
 | 40                  | 5                     | 6             | 1.07     | 84.23             | 83.7             |
 | 40                  | 5                     | 7             | 1.17     | 84.49             | 84.56            |
-| 40                  | 5                     | 8             | 1.29     | 86.11             | 85.90            |
+| 40                  | 5                     | 8             | 1.29     | 86.11             | **85.90**        |
 | 40                  | 5                     | 9             | 1.29     | 82.89             | 82.59            |
 | 40                  | 5                     | 10            | 1.34     | 69.12             | 69.46            |
 | 40                  | 5                     | 12            | 1.55     | 83.27             | 83.21            |
@@ -106,7 +120,7 @@ Repeating the same with Attribute Generations=40
 | 40                  | 40                    | 6             | 1.95     | 85.48             | 85.76            |
 | 40                  | 40                    | 7             | 2.03     | 83.80             | 83.85            | 
 | 40                  | 40                    | 8             | 2.14     | 87.08             | 87.36            |
-| 40                  | 40                    | 9             | 2.22     | 89.69             | 89.74            |
+| 40                  | 40                    | 9             | 2.22     | 89.69             | **89.74**        |
 | 40                  | 40                    | 10            | 2.32     | 81.46             | 81.45            |
 | 40                  | 40                    | 12            | 2.48     | 85.98             | 85.55            |
 | 40                  | 40                    | 15            | 2.66     | 88.54             | 88.04            |
