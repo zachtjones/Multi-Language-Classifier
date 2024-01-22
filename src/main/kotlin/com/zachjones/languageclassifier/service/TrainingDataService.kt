@@ -40,7 +40,7 @@ class TrainingDataService(
             TrainingData(
                 id = it.key,
                 // assuming all words are the same size
-                numberOfPhrasesInEachLanguage = it.value.size / Language.values().size,
+                numberOfPhrasesInEachLanguage = it.value.size / (Language.values().size - 1), // other is not a language that should count
                 averageWordCountPerPhrase = it.value.averageWordCount()
             )
         }
