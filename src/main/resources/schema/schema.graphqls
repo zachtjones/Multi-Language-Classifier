@@ -2,6 +2,7 @@ type Query {
     trainingData: TrainingDataResult!
     models: TrainedModelsResult!
     language(input: LanguageClassificationInput!): LanguageClassificationResult!
+    randomPhrase: RandomPhraseResult!
 }
 
 type Mutation {
@@ -95,6 +96,11 @@ type LanguageProbability {
 input LanguageClassificationInput {
     phrase: String!
     modelId: ID!
+}
+
+type RandomPhraseResult {
+    phrase: String!
+    language: Language!
 }
 
 enum Language {
